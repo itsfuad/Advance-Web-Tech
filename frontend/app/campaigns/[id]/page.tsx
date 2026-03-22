@@ -382,7 +382,7 @@ export default function CampaignDetailPage() {
                 <Trash2 size={14} className="mr-1.5" /> Delete
               </Button>
             )}
-            {user && !isOwner && (
+            {user && !isOwner && !isAdmin && (
               <Button
                 variant="ghost"
                 size="sm"
