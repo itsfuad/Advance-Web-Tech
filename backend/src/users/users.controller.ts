@@ -41,8 +41,9 @@ export class UsersController {
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+    @Query('search') search?: string,
   ) {
-    return this.usersService.findAll(page, limit);
+    return this.usersService.findAll(page, limit, search);
   }
 
   @Get('me')
@@ -86,7 +87,7 @@ export class UsersController {
     @Body(ValidationPipe) dto: UpdateProfileDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    if (!req.user?.emailVerified) {
+    if (!req.user?.emailVerified && req.user?.role !== UserRole.ADMIN) {
       throw new ForbiddenException(
         'Please verify your email before updating your profile',
       );

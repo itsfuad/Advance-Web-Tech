@@ -16,6 +16,7 @@ import { DonationsService } from './donations.service';
 import { CreateDonationDto } from './donation.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Public } from '../auth/decorators';
+import { UserRole } from '../users/user.entity';
 
 @Controller('donations')
 @UseGuards(JwtAuthGuard)
@@ -28,6 +29,9 @@ export class DonationsController {
     @Request() req,
     @Body(new ValidationPipe({ transform: true })) dto: CreateDonationDto,
   ) {
+    if (req.user?.role === UserRole.ADMIN) {
+      throw new ForbiddenException('Admins cannot make donations');
+    }
     if (!req.user?.emailVerified) {
       throw new ForbiddenException('Please verify your email before donating');
     }

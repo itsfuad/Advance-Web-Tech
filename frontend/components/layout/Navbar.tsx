@@ -43,8 +43,16 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const authCtaHref = user ? "/campaigns/new" : "/register";
-  const authCtaLabel = user ? "Start Campaign" : "Get Started";
+  const authCtaHref = user
+    ? user.role === "admin"
+      ? "/admin"
+      : "/campaigns/new"
+    : "/register";
+  const authCtaLabel = user
+    ? user.role === "admin"
+      ? "Admin Panel"
+      : "Start Campaign"
+    : "Get Started";
   const emailVerified = Boolean(user?.emailVerified || user?.emailVerifiedAt);
 
   return (

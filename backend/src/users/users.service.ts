@@ -13,20 +13,30 @@ import {
   ChangePasswordDto,
   UpdateUserStatusDto,
 } from './user.dto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private emailService: EmailService,
   ) {}
 
-  async findAll(page = 1, limit = 20) {
-    const [users, total] = await this.userRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { createdAt: 'DESC' },
-    });
+  async findAll(page = 1, limit = 20, search?: string) {
+    const qb = this.userRepository
+      .createQueryBuilder('user')
+      .orderBy('user.createdAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    if (search) {
+      qb.where('(user.name LIKE :search OR user.email LIKE :search)', {
+        search: `%${search}%`,
+      });
+    }
+
+    const [users, total] = await qb.getManyAndCount();
     return {
       data: users.map(({ password, otpCode, otpExpiry, ...u }) => ({
         ...u,
@@ -108,10 +118,19 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
 
+    const previousStatus = user.status;
     user.status = dto.status;
     await this.userRepository.save(user);
 
     const { password, otpCode, otpExpiry, ...profile } = user;
+    if (previousStatus !== user.status) {
+      await this.emailService.sendUserStatusEmail(
+        user.email,
+        user.name,
+        previousStatus,
+        user.status,
+      );
+    }
     return {
       ...profile,
       emailVerified: user.emailVerified,

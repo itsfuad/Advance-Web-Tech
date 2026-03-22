@@ -70,8 +70,9 @@ export class CampaignsController {
   findAllAdmin(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+    @Query('search') search?: string,
   ) {
-    return this.campaignsService.findAllAdmin(page, limit);
+    return this.campaignsService.findAllAdmin(page, limit, search);
   }
 
   @Get('admin/reported')
@@ -80,8 +81,9 @@ export class CampaignsController {
   getReported(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+    @Query('search') search?: string,
   ) {
-    return this.campaignsService.getReported(page, limit);
+    return this.campaignsService.getReported(page, limit, search);
   }
 
   @Get('my')
@@ -116,6 +118,9 @@ export class CampaignsController {
     @Body(new ValidationPipe({ transform: true })) dto: CreateCampaignDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
+    if (req.user?.role === UserRole.ADMIN) {
+      throw new ForbiddenException('Admins cannot create campaigns');
+    }
     if (!req.user?.emailVerified) {
       throw new ForbiddenException(
         'Please verify your email before creating a campaign',
@@ -171,5 +176,12 @@ export class CampaignsController {
   @Roles(UserRole.ADMIN)
   unfreeze(@Param('id') id: string) {
     return this.campaignsService.unfreeze(id);
+  }
+
+  @Patch(':id/dismiss-report')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  dismissReport(@Param('id') id: string) {
+    return this.campaignsService.dismissReport(id);
   }
 }

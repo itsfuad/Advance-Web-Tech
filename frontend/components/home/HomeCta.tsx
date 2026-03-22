@@ -11,8 +11,12 @@ export default function HomeCta() {
   const primaryHref = isLoading
     ? "/register"
     : user
-      ? "/campaigns/new"
+      ? user.role === "admin"
+        ? "/admin"
+        : "/campaigns/new"
       : "/register";
+  const primaryLabel =
+    user?.role === "admin" ? "Admin Panel" : "Start a Campaign";
   const secondaryHref = "/campaigns";
 
   return (
@@ -22,7 +26,7 @@ export default function HomeCta() {
           size="lg"
           className="bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)] w-full sm:w-auto"
         >
-          Start a Campaign <ArrowRight size={16} className="ml-2 inline" />
+          {primaryLabel} <ArrowRight size={16} className="ml-2 inline" />
         </Button>
       </Link>
 

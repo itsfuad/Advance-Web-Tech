@@ -36,6 +36,7 @@ export default function ProfilePage() {
   const [page, setPage] = useState(1);
 
   const [name, setName] = useState("");
+  const [nameDirty, setNameDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
   const [saveError, setSaveError] = useState("");
@@ -62,10 +63,10 @@ export default function ProfilePage() {
       router.replace("/login");
       return;
     }
-    if (isSelf && user) {
+    if (isSelf && user && !nameDirty) {
       setName(user.name);
     }
-  }, [isSelf, user, isLoading, router]);
+  }, [isSelf, user, isLoading, router, nameDirty]);
 
   useEffect(() => {
     if (!isSelf || !user) return;
@@ -151,6 +152,8 @@ export default function ProfilePage() {
         ...res.data,
         profileImage: res.data.profileImage ?? user.profileImage,
       });
+      setName(res.data.name ?? name);
+      setNameDirty(false);
       setSaveMsg("Profile updated successfully!");
       setImagePreview(null);
       fetchProfile();
@@ -393,7 +396,10 @@ export default function ProfilePage() {
                   <Input
                     id="name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setNameDirty(true);
+                    }}
                     placeholder="Your name"
                   />
                 </div>

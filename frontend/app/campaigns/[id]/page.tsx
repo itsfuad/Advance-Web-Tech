@@ -304,7 +304,11 @@ export default function CampaignDetailPage() {
   const isAdmin = user?.role === "admin";
 
   const canDonate = Boolean(
-    user && emailVerified && !isOwner && campaign.status === "active",
+    user &&
+    emailVerified &&
+    !isOwner &&
+    !isAdmin &&
+    campaign.status === "active",
   );
   const cardIsValid = cardStatus === "valid";
   const showCardStatus =
@@ -461,13 +465,19 @@ export default function CampaignDetailPage() {
                 </Button>
               )}
 
-              {user && !emailVerified && (
+              {user && !emailVerified && !isAdmin && (
                 <Link href={`/profile/${user?.id ?? ""}`}>
                   <Button variant="outline" className="w-full">
                     <TriangleAlert size={16} className="mr-2" />
                     Verify email to donate
                   </Button>
                 </Link>
+              )}
+
+              {isAdmin && (
+                <p className="text-center text-sm text-neutral-500">
+                  Admin accounts cannot donate.
+                </p>
               )}
 
               {!user && (

@@ -50,12 +50,17 @@ export default function NewCampaignPage() {
       router.replace("/login");
       return;
     }
+    if (user.role === "admin") {
+      router.replace("/admin");
+      return;
+    }
     if (!emailVerified) {
       router.replace(`/profile/${user?.id ?? ""}`);
     }
   }, [emailVerified, isLoading, router, user]);
 
-  if (isLoading || !user || !emailVerified) return null;
+  if (isLoading || !user || user.role === "admin" || !emailVerified)
+    return null;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

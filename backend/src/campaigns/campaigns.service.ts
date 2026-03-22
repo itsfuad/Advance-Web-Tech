@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Campaign, CampaignStatus } from './campaign.entity';
 import { UserRole } from '../users/user.entity';
+import { EmailService } from '../email/email.service';
 import {
   CreateCampaignDto,
   UpdateCampaignDto,
@@ -19,6 +20,7 @@ export class CampaignsService {
   constructor(
     @InjectRepository(Campaign)
     private campaignRepository: Repository<Campaign>,
+    private emailService: EmailService,
   ) {}
 
   async findAll(
@@ -59,12 +61,22 @@ export class CampaignsService {
     return { data, total, page, limit };
   }
 
-  async findAllAdmin(page = 1, limit = 20) {
-    const [data, total] = await this.campaignRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { createdAt: 'DESC' },
-    });
+  async findAllAdmin(page = 1, limit = 20, search?: string) {
+    const qb = this.campaignRepository
+      .createQueryBuilder('campaign')
+      .leftJoinAndSelect('campaign.creator', 'creator')
+      .orderBy('campaign.createdAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    if (search) {
+      qb.andWhere(
+        '(campaign.title LIKE :search OR campaign.description LIKE :search OR creator.name LIKE :search OR creator.email LIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit };
   }
 
@@ -171,24 +183,60 @@ export class CampaignsService {
     const campaign = await this.campaignRepository.findOne({ where: { id } });
     if (!campaign) throw new NotFoundException('Campaign not found');
     campaign.status = CampaignStatus.FROZEN;
-    return this.campaignRepository.save(campaign);
+    const saved = await this.campaignRepository.save(campaign);
+    if (campaign.creator?.email) {
+      await this.emailService.sendCampaignStatusEmail(
+        campaign.creator.email,
+        campaign.creator.name,
+        campaign.title,
+        CampaignStatus.FROZEN,
+      );
+    }
+    return saved;
   }
 
   async unfreeze(id: string) {
     const campaign = await this.campaignRepository.findOne({ where: { id } });
     if (!campaign) throw new NotFoundException('Campaign not found');
     campaign.status = CampaignStatus.ACTIVE;
-    return this.campaignRepository.save(campaign);
+    const saved = await this.campaignRepository.save(campaign);
+    if (campaign.creator?.email) {
+      await this.emailService.sendCampaignStatusEmail(
+        campaign.creator.email,
+        campaign.creator.name,
+        campaign.title,
+        CampaignStatus.ACTIVE,
+      );
+    }
+    return saved;
   }
 
-  async getReported(page = 1, limit = 20) {
-    const [data, total] = await this.campaignRepository.findAndCount({
-      where: { reported: true },
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { updatedAt: 'DESC' },
-    });
+  async getReported(page = 1, limit = 20, search?: string) {
+    const qb = this.campaignRepository
+      .createQueryBuilder('campaign')
+      .leftJoinAndSelect('campaign.creator', 'creator')
+      .where('campaign.reported = :reported', { reported: true })
+      .orderBy('campaign.updatedAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    if (search) {
+      qb.andWhere(
+        '(campaign.title LIKE :search OR campaign.description LIKE :search OR creator.name LIKE :search OR creator.email LIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit };
+  }
+
+  async dismissReport(id: string) {
+    const campaign = await this.campaignRepository.findOne({ where: { id } });
+    if (!campaign) throw new NotFoundException('Campaign not found');
+    campaign.reported = false;
+    campaign.reportReason = '';
+    return this.campaignRepository.save(campaign);
   }
 
   async addRaisedAmount(campaignId: string, amount: number) {

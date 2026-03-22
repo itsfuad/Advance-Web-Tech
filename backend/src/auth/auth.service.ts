@@ -84,7 +84,7 @@ export class AuthService {
     }
 
     if (user.status === UserStatus.BANNED) {
-      throw new UnauthorizedException('Your account has been banned');
+      throw new UnauthorizedException('Your account has been banned. Contact support');
     }
     if (user.status === UserStatus.BLOCKED) {
       throw new UnauthorizedException('Your account is blocked. Contact support');

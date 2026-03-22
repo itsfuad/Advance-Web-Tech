@@ -8,9 +8,13 @@ export class EmailService {
   private readonly logger = new Logger(EmailService.name);
 
   constructor(private configService: ConfigService) {
+    const smtpPort = this.configService.get<string>('SMTP_PORT');
+    if (!smtpPort) {
+      throw new Error('SMTP_PORT is not configured');
+    }
     this.transporter = nodemailer.createTransport({
       host: this.configService.get('SMTP_HOST'),
-      port: parseInt(this.configService.get('SMTP_PORT', '587'), 10),
+      port: parseInt(smtpPort, 10),
       secure: false,
       auth: {
         user: this.configService.get('SMTP_USER'),
@@ -59,10 +63,7 @@ export class EmailService {
   }
 
   async sendWelcomeEmail(to: string, name: string): Promise<void> {
-    const fromEmail = this.configService.get(
-      'SMTP_FROM',
-      'noreply@fundrise.com',
-    );
+    const fromEmail = this.configService.get('SMTP_FROM');
     const mailOptions = {
       from: `"FundRise" <${fromEmail}>`,
       to,
@@ -99,10 +100,7 @@ export class EmailService {
     name: string,
     link: string,
   ): Promise<void> {
-    const fromEmail = this.configService.get(
-      'SMTP_FROM',
-      'noreply@fundrise.com',
-    );
+    const fromEmail = this.configService.get('SMTP_FROM');
     const mailOptions = {
       from: `"FundRise" <${fromEmail}>`,
       to,
@@ -131,6 +129,94 @@ export class EmailService {
     } catch (error) {
       this.logger.error(
         `Failed to send verification email to ${to}: ${error.message}`,
+      );
+    }
+  }
+
+  async sendUserStatusEmail(
+    to: string,
+    name: string,
+    previousStatus: string,
+    currentStatus: string,
+  ): Promise<void> {
+    const fromEmail = this.configService.get('SMTP_FROM');
+    const subjectMap: Record<string, string> = {
+      banned: 'Your FundRise account has been banned',
+      blocked: 'Your FundRise account has been blocked',
+      active: 'Your FundRise account has been reactivated',
+    };
+    const subject = subjectMap[currentStatus] ?? 'Account status updated';
+    const mailOptions = {
+      from: `"FundRise" <${fromEmail}>`,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+          <div style="background: #000; padding: 24px; text-align: center;">
+            <h1 style="color: #fff; margin: 0; font-size: 24px; letter-spacing: 2px;">FUNDRISE</h1>
+          </div>
+          <div style="padding: 32px;">
+            <h2 style="color: #000; margin-top: 0;">Account status update</h2>
+            <p style="color: #333;">Hi ${name},</p>
+            <p style="color: #333; line-height: 1.6;">
+              Your account status has changed from <strong>${previousStatus}</strong> to
+              <strong>${currentStatus}</strong> by an administrator.
+            </p>
+            <p style="color: #666; font-size: 14px;">If you believe this is a mistake, please contact support.</p>
+          </div>
+        </div>
+      `,
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      this.logger.log(`Status email sent to ${to}`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to send status email to ${to}: ${error.message}`,
+      );
+    }
+  }
+
+  async sendCampaignStatusEmail(
+    to: string,
+    name: string,
+    campaignTitle: string,
+    status: string,
+  ): Promise<void> {
+    const fromEmail = this.configService.get('SMTP_FROM');
+    const subject =
+      status === 'frozen'
+        ? 'Your FundRise campaign has been frozen'
+        : 'Your FundRise campaign is active again';
+    const mailOptions = {
+      from: `"FundRise" <${fromEmail}>`,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+          <div style="background: #000; padding: 24px; text-align: center;">
+            <h1 style="color: #fff; margin: 0; font-size: 24px; letter-spacing: 2px;">FUNDRISE</h1>
+          </div>
+          <div style="padding: 32px;">
+            <h2 style="color: #000; margin-top: 0;">Campaign status update</h2>
+            <p style="color: #333;">Hi ${name},</p>
+            <p style="color: #333; line-height: 1.6;">
+              Your campaign <strong>${campaignTitle}</strong> is now marked as
+              <strong>${status}</strong> by an administrator.
+            </p>
+            <p style="color: #666; font-size: 14px;">If you believe this is a mistake, please contact support.</p>
+          </div>
+        </div>
+      `,
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      this.logger.log(`Campaign status email sent to ${to}`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to send campaign status email to ${to}: ${error.message}`,
       );
     }
   }
