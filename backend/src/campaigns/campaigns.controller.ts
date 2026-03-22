@@ -14,14 +14,18 @@ import {
   ValidationPipe,
   ParseIntPipe,
   DefaultValuePipe,
-  Optional,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { CampaignsService } from './campaigns.service';
-import { CreateCampaignDto, UpdateCampaignDto, ReportCampaignDto } from './campaign.dto';
+import {
+  CreateCampaignDto,
+  UpdateCampaignDto,
+  ReportCampaignDto,
+} from './campaign.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Public, Roles } from '../auth/decorators';
@@ -55,8 +59,9 @@ export class CampaignsController {
     @Query('limit', new DefaultValuePipe(12), ParseIntPipe) limit: number,
     @Query('category') category?: string,
     @Query('search') search?: string,
+    @Query('sort') sort?: string,
   ) {
-    return this.campaignsService.findAll(page, limit, category, search);
+    return this.campaignsService.findAll(page, limit, category, search, sort);
   }
 
   @Get('admin/all')
@@ -101,6 +106,12 @@ export class CampaignsController {
     @Body(new ValidationPipe({ transform: true })) dto: CreateCampaignDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
+    if (!req.user?.emailVerified) {
+      throw new ForbiddenException(
+        'Please verify your email before creating a campaign',
+      );
+    }
+
     const coverImage = file ? `/uploads/campaigns/${file.filename}` : undefined;
     return this.campaignsService.create(req.user.id, dto, coverImage);
   }
@@ -110,11 +121,18 @@ export class CampaignsController {
   update(
     @Param('id') id: string,
     @Request() req,
-    @Body(new ValidationPipe({ transform: true, skipMissingProperties: true })) dto: UpdateCampaignDto,
+    @Body(new ValidationPipe({ transform: true, skipMissingProperties: true }))
+    dto: UpdateCampaignDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
     const coverImage = file ? `/uploads/campaigns/${file.filename}` : undefined;
-    return this.campaignsService.update(id, req.user.id, req.user.role, dto, coverImage);
+    return this.campaignsService.update(
+      id,
+      req.user.id,
+      req.user.role,
+      dto,
+      coverImage,
+    );
   }
 
   @Delete(':id')

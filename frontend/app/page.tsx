@@ -8,8 +8,8 @@ import HomeCta from "@/components/home/HomeCta";
 async function getFeaturedCampaigns(): Promise<Campaign[]> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/campaigns?limit=6`,
-      { next: { revalidate: 60 } },
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/campaigns?limit=6&sort=top`,
+      { cache: "no-store" },
     );
 
     if (!res.ok) return [];
@@ -25,7 +25,7 @@ export default async function HomePage() {
   const campaigns = await getFeaturedCampaigns();
 
   return (
-    <div>
+    <div suppressHydrationWarning>
       {/* Hero */}
       <section className="bg-black text-white py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -45,22 +45,25 @@ export default async function HomePage() {
       {/* Stats */}
       <section className="py-16 border-b border-neutral-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="p-6">
+          <div
+            suppressHydrationWarning
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
+          >
+            <div suppressHydrationWarning className="p-6">
               <div className="flex justify-center mb-3">
                 <Target size={32} />
               </div>
               <div className="text-3xl font-bold mb-1">1,000+</div>
               <div className="text-neutral-500 text-sm">Campaigns Funded</div>
             </div>
-            <div className="p-6">
+            <div suppressHydrationWarning className="p-6">
               <div className="flex justify-center mb-3">
                 <Users size={32} />
               </div>
               <div className="text-3xl font-bold mb-1">50,000+</div>
               <div className="text-neutral-500 text-sm">Community Members</div>
             </div>
-            <div className="p-6">
+            <div suppressHydrationWarning className="p-6">
               <div className="flex justify-center mb-3">
                 <TrendingUp size={32} />
               </div>
@@ -73,9 +76,12 @@ export default async function HomePage() {
 
       {/* Featured Campaigns */}
       {campaigns.length > 0 && (
-        <section className="py-16 px-4">
+        <section suppressHydrationWarning className="py-16 px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
+            <div
+              suppressHydrationWarning
+              className="flex items-center justify-between mb-8"
+            >
               <h2 className="text-2xl font-bold">Featured Campaigns</h2>
               <Link href="/campaigns">
                 <Button variant="ghost" size="sm">
@@ -83,7 +89,10 @@ export default async function HomePage() {
                 </Button>
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              suppressHydrationWarning
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {campaigns.map((campaign) => (
                 <CampaignCard key={campaign.id} campaign={campaign} />
               ))}
@@ -93,8 +102,8 @@ export default async function HomePage() {
       )}
 
       {/* CTA */}
-      <section className="py-20 bg-neutral-50 px-4">
-        <div className="max-w-3xl mx-auto text-center">
+      <section suppressHydrationWarning className="py-20 bg-neutral-50 px-4">
+        <div suppressHydrationWarning className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to make an impact?</h2>
           <p className="text-neutral-500 mb-8">
             Join thousands of creators and backers who are changing the world

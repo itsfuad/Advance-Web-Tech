@@ -8,7 +8,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User, UserStatus } from './user.entity';
-import { UpdateProfileDto, ChangePasswordDto, UpdateUserStatusDto } from './user.dto';
+import {
+  UpdateProfileDto,
+  ChangePasswordDto,
+  UpdateUserStatusDto,
+} from './user.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +28,11 @@ export class UsersService {
       order: { createdAt: 'DESC' },
     });
     return {
-      data: users.map(({ password, otpCode, otpExpiry, ...u }) => u),
+      data: users.map(({ password, otpCode, otpExpiry, ...u }) => ({
+        ...u,
+        emailVerified: u.emailVerified,
+        emailVerifiedAt: u.emailVerifiedAt,
+      })),
       total,
       page,
       limit,
@@ -35,19 +43,37 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
     const { password, otpCode, otpExpiry, ...profile } = user;
-    return profile;
+    return {
+      ...profile,
+      emailVerified: user.emailVerified,
+      emailVerifiedAt: user.emailVerifiedAt,
+    };
   }
 
-  async updateProfile(userId: string, dto: UpdateProfileDto, profileImage?: string) {
+  async updateProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+    profileImage?: string,
+  ) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
+
+    if (!user.emailVerified) {
+      throw new ForbiddenException(
+        'Please verify your email before updating your profile',
+      );
+    }
 
     if (dto.name) user.name = dto.name;
     if (profileImage) user.profileImage = profileImage;
 
     await this.userRepository.save(user);
     const { password, otpCode, otpExpiry, ...profile } = user;
-    return profile;
+    return {
+      ...profile,
+      emailVerified: user.emailVerified,
+      emailVerifiedAt: user.emailVerifiedAt,
+    };
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto) {
@@ -55,7 +81,8 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
 
     const isValid = await bcrypt.compare(dto.currentPassword, user.password);
-    if (!isValid) throw new BadRequestException('Current password is incorrect');
+    if (!isValid)
+      throw new BadRequestException('Current password is incorrect');
 
     user.password = await bcrypt.hash(dto.newPassword, 12);
     await this.userRepository.save(user);
@@ -71,7 +98,11 @@ export class UsersService {
     await this.userRepository.save(user);
 
     const { password, otpCode, otpExpiry, ...profile } = user;
-    return profile;
+    return {
+      ...profile,
+      emailVerified: user.emailVerified,
+      emailVerifiedAt: user.emailVerifiedAt,
+    };
   }
 
   async getUserStats(userId: string) {

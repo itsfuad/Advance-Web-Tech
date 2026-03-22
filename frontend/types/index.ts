@@ -3,8 +3,10 @@ export interface User {
   email: string;
   name: string;
   profileImage?: string;
-  role: 'admin' | 'user';
-  status: 'active' | 'blocked' | 'banned';
+  role: "admin" | "user";
+  status: "active" | "blocked" | "banned";
+  emailVerified?: boolean;
+  emailVerifiedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -16,7 +18,7 @@ export interface Campaign {
   goalAmount: number;
   raisedAmount: number;
   coverImage?: string;
-  status: 'active' | 'frozen' | 'closed';
+  status: "active" | "frozen" | "closed";
   deadline?: string;
   category?: string;
   creatorId: string;
@@ -30,7 +32,7 @@ export interface Campaign {
 export interface Donation {
   id: string;
   amount: number;
-  status: 'pending' | 'completed' | 'failed';
+  status: "pending" | "completed" | "failed";
   transactionId?: string;
   message?: string;
   donorId: string;

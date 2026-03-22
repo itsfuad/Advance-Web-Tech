@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { User } from '../users/user.entity';
 import { EmailModule } from '../email/email.module';
+import { ExpiredAccountCleanupService } from './expired-account-cleanup.service';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { EmailModule } from '../email/email.module';
     }),
     EmailModule,
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, ExpiredAccountCleanupService],
   controllers: [AuthController],
   exports: [AuthService],
 })

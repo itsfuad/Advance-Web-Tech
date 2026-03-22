@@ -8,11 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Camera } from "lucide-react";
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
-  "http://localhost:4000";
+import { AlertTriangle, Camera, MailCheck } from "lucide-react";
+import { resolveImageUrl } from "@/lib/utils";
 
 export default function ProfilePage() {
   const { user, updateUser, isLoading } = useAuth();
@@ -50,6 +47,9 @@ export default function ProfilePage() {
     }
     setName(user.name);
   }, [user, isLoading, router]);
+
+  const emailVerified = Boolean(user?.emailVerified || user?.emailVerifiedAt);
+  const canDeleteAccount = !emailVerified;
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +116,7 @@ export default function ProfilePage() {
   if (isLoading || !user) return null;
 
   const avatarUrl = user.profileImage
-    ? `${API_BASE}${user.profileImage}`
+    ? resolveImageUrl(user.profileImage)
     : null;
 
   return (
@@ -127,6 +127,28 @@ export default function ProfilePage() {
           Manage your account details
         </p>
       </div>
+
+      {!emailVerified && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="mt-0.5 text-amber-600" size={18} />
+            <div className="flex-1">
+              <p className="font-medium text-amber-900">Email not verified</p>
+              <p className="mt-1 text-sm text-amber-800">
+                Verify your email to unlock campaign creation and donations.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-amber-300 bg-white text-amber-900 hover:bg-amber-100"
+            >
+              <MailCheck size={16} className="mr-2" />
+              Verify email
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Profile card */}
       <Card className="mb-6">
@@ -165,6 +187,12 @@ export default function ProfilePage() {
                 <p className="text-xs text-neutral-400 mt-0.5 capitalize">
                   {user.role}
                 </p>
+                {!emailVerified && (
+                  <p className="mt-2 flex items-center gap-1 text-xs font-medium text-amber-700">
+                    <AlertTriangle size={14} />
+                    Email not verified
+                  </p>
+                )}
               </div>
             </div>
 
@@ -205,7 +233,7 @@ export default function ProfilePage() {
       </Card>
 
       {/* Password card */}
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle>Change Password</CardTitle>
         </CardHeader>

@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   DefaultValuePipe,
   ValidationPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { DonationsService } from './donations.service';
 import { CreateDonationDto } from './donation.dto';
@@ -27,6 +28,10 @@ export class DonationsController {
     @Request() req,
     @Body(new ValidationPipe({ transform: true })) dto: CreateDonationDto,
   ) {
+    if (!req.user?.emailVerified) {
+      throw new ForbiddenException('Please verify your email before donating');
+    }
+
     return this.donationsService.donate(campaignId, req.user.id, dto);
   }
 

@@ -9,10 +9,18 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+import { randomBytes } from 'crypto';
 import { User, UserStatus } from '../users/user.entity';
 import { EmailService } from '../email/email.service';
-import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto } from './auth.dto';
+import {
+  RegisterDto,
+  LoginDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  VerifyEmailDto,
+} from './auth.dto';
+
+const EMAIL_VERIFICATION_WINDOW_MS = 10 * 60 * 1000;
 
 @Injectable()
 export class AuthService {
@@ -24,27 +32,52 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const existing = await this.userRepository.findOne({ where: { email: dto.email } });
+    const existing = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
     if (existing) {
       throw new ConflictException('Email already registered');
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 12);
+    const emailVerificationToken = randomBytes(32).toString('hex');
+    const emailVerificationExpiresAt = new Date(
+      Date.now() + EMAIL_VERIFICATION_WINDOW_MS,
+    );
+
     const user = this.userRepository.create({
       email: dto.email,
       name: dto.name,
       password: hashedPassword,
+      emailVerified: false,
+      emailVerifiedAt: null,
+      otpCode: emailVerificationToken,
+      otpExpiry: emailVerificationExpiresAt,
     });
     await this.userRepository.save(user);
 
-    // Send welcome email (non-blocking)
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const verificationLink = `${frontendUrl}/verify-email?token=${emailVerificationToken}&email=${encodeURIComponent(user.email)}`;
+
+    this.emailService
+      .sendEmailVerificationEmail(user.email, user.name, verificationLink)
+      .catch(() => {});
+
     this.emailService.sendWelcomeEmail(user.email, user.name).catch(() => {});
+
+    setTimeout(() => {
+      void this.deleteUnverifiedAccount(user.id, { skipAgeCheck: true }).catch(
+        () => {},
+      );
+    }, EMAIL_VERIFICATION_WINDOW_MS);
 
     return this.generateToken(user);
   }
 
   async login(dto: LoginDto) {
-    const user = await this.userRepository.findOne({ where: { email: dto.email } });
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -65,14 +98,15 @@ export class AuthService {
   }
 
   async forgotPassword(dto: ForgotPasswordDto) {
-    const user = await this.userRepository.findOne({ where: { email: dto.email } });
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
     if (!user) {
-      // Don't reveal if email exists
       return { message: 'If this email exists, an OTP has been sent' };
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
     await this.userRepository.update(user.id, {
       otpCode: otp,
@@ -85,7 +119,9 @@ export class AuthService {
   }
 
   async resetPassword(dto: ResetPasswordDto) {
-    const user = await this.userRepository.findOne({ where: { email: dto.email } });
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
     if (!user) {
       throw new BadRequestException('Invalid OTP or email');
     }
@@ -113,16 +149,83 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const { password, otpCode, otpExpiry, ...profile } = user;
-    return profile;
+    const { ...profile } = user;
+    return {
+      ...profile,
+      emailVerified: user.emailVerified,
+      emailVerifiedAt: user.emailVerifiedAt,
+    };
+  }
+
+  async verifyEmail(dto: VerifyEmailDto) {
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid verification request');
+    }
+
+    if (!user.otpCode || user.otpCode !== dto.token) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
+    if (!user.otpExpiry || new Date() > user.otpExpiry) {
+      throw new BadRequestException('Verification token has expired');
+    }
+
+    user.emailVerified = true;
+    user.emailVerifiedAt = new Date();
+    user.otpCode = null;
+    user.otpExpiry = null;
+    await this.userRepository.save(user);
+
+    const { ...profile } = user;
+    return {
+      message: 'Email verified successfully',
+      user: profile,
+    };
+  }
+
+  async deleteUnverifiedAccount(
+    userId: string,
+    options: { skipAgeCheck?: boolean } = {},
+  ) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.emailVerified) {
+      throw new BadRequestException(
+        'Verified accounts cannot be deleted using this action',
+      );
+    }
+
+    if (!user.createdAt) {
+      throw new BadRequestException('Account deletion is unavailable');
+    }
+
+    if (!options.skipAgeCheck) {
+      const ageMs = Date.now() - new Date(user.createdAt).getTime();
+      if (ageMs > EMAIL_VERIFICATION_WINDOW_MS) {
+        throw new BadRequestException('Deletion window has expired');
+      }
+    }
+
+    await this.userRepository.delete(user.id);
+    return { message: 'Account deleted successfully' };
   }
 
   private generateToken(user: User) {
     const payload = { sub: user.id, email: user.email, role: user.role };
-    const { password, otpCode, otpExpiry, ...userInfo } = user;
+    const { ...userInfo } = user;
     return {
       access_token: this.jwtService.sign(payload),
-      user: userInfo,
+      user: {
+        ...userInfo,
+        emailVerified: user.emailVerified,
+        emailVerifiedAt: user.emailVerifiedAt,
+      },
     };
   }
 }

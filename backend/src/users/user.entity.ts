@@ -26,6 +26,12 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ type: 'boolean', default: false })
+  emailVerified: boolean;
+
+  @Column({ nullable: true, type: 'datetime' })
+  emailVerifiedAt: Date | null;
+
   @Exclude()
   @Column()
   password: string;

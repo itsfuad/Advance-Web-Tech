@@ -18,6 +18,11 @@
     --border: #e5e7eb;
     --destructive: #dc2626;
     --destructive-hover: #b91c1c;
+
+    --footer-background: #111111;
+    --footer-foreground: #ffffff;
+    --footer-muted-foreground: #9ca3af;
+    --footer-border: #27272a;
 }
 
 body {

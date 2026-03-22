@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
@@ -9,8 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, X } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { TriangleAlert, Upload, X, Loader2 } from "lucide-react";
 
 const CATEGORIES = [
   "Technology",
@@ -27,6 +28,7 @@ export default function NewCampaignPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploadingPreview, setUploadingPreview] = useState(false);
   const [error, setError] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -38,22 +40,36 @@ export default function NewCampaignPage() {
     category: "",
   });
 
+  const emailVerified = Boolean(user?.emailVerified || user?.emailVerifiedAt);
+
   useEffect(() => {
     if (isLoading) return;
     if (!user) {
       router.replace("/login");
+      return;
     }
-  }, [isLoading, router, user]);
+    if (!emailVerified) {
+      router.replace("/profile");
+    }
+  }, [emailVerified, isLoading, router, user]);
 
-  if (isLoading || !user) return null;
+  if (isLoading || !user || !emailVerified) return null;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    setUploadingPreview(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+      setUploadingPreview(false);
+    };
+    reader.onerror = () => {
+      setUploadingPreview(false);
+      setError("Failed to preview the selected image");
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,6 +106,29 @@ export default function NewCampaignPage() {
         <p className="text-neutral-500 mt-1">Share your cause with the world</p>
       </div>
 
+      {!emailVerified && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <div className="flex items-start gap-3">
+            <TriangleAlert className="mt-0.5 text-amber-600" size={18} />
+            <div className="flex-1">
+              <p className="font-medium text-amber-900">Email not verified</p>
+              <p className="mt-1 text-sm text-amber-800">
+                Verify your email to unlock campaign creation.
+              </p>
+            </div>
+            <Link href="/profile">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-amber-300 bg-white text-amber-900 hover:bg-amber-100"
+              >
+                Verify email
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
       <Card>
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -99,14 +138,17 @@ export default function NewCampaignPage() {
               </div>
             )}
 
-            {/* Cover Image */}
             <div className="space-y-1.5">
               <Label>Cover Image</Label>
               <div
                 className="border-2 border-dashed border-neutral-200 rounded-lg p-6 text-center cursor-pointer hover:border-black transition-colors relative"
                 onClick={() => fileRef.current?.click()}
               >
-                {imagePreview ? (
+                {uploadingPreview ? (
+                  <div className="flex h-40 items-center justify-center rounded bg-neutral-50">
+                    <Loader2 className="h-6 w-6 animate-spin text-neutral-500" />
+                  </div>
+                ) : imagePreview ? (
                   <>
                     <img
                       src={imagePreview}
@@ -118,6 +160,7 @@ export default function NewCampaignPage() {
                       className="absolute top-2 right-2 bg-black text-white rounded-full p-1"
                       onClick={(e) => {
                         e.stopPropagation();
+                        setUploadingPreview(false);
                         setImagePreview(null);
                         if (fileRef.current) fileRef.current.value = "";
                       }}
@@ -229,11 +272,24 @@ export default function NewCampaignPage() {
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
+                disabled={loading || uploadingPreview}
               >
                 Cancel
               </Button>
-              <Button type="submit" loading={loading} className="flex-1">
-                Launch Campaign
+              <Button
+                type="submit"
+                loading={loading}
+                className="flex-1"
+                disabled={uploadingPreview}
+              >
+                {loading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 size={16} className="animate-spin" />
+                    Launching...
+                  </span>
+                ) : (
+                  "Launch Campaign"
+                )}
               </Button>
             </div>
           </form>

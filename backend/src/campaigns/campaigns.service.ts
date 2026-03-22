@@ -21,7 +21,13 @@ export class CampaignsService {
     private campaignRepository: Repository<Campaign>,
   ) {}
 
-  async findAll(page = 1, limit = 12, category?: string, search?: string) {
+  async findAll(
+    page = 1,
+    limit = 12,
+    category?: string,
+    search?: string,
+    sort?: string,
+  ) {
     const qb = this.campaignRepository
       .createQueryBuilder('campaign')
       .leftJoinAndSelect('campaign.creator', 'creator')
@@ -38,9 +44,16 @@ export class CampaignsService {
       );
     }
 
-    qb.orderBy('campaign.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit);
+    if (sort === 'top') {
+      qb.orderBy('campaign.raisedAmount', 'DESC').addOrderBy(
+        'campaign.createdAt',
+        'DESC',
+      );
+    } else {
+      qb.orderBy('campaign.createdAt', 'DESC');
+    }
+
+    qb.skip((page - 1) * limit).take(limit);
 
     const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit };

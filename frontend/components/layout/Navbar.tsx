@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { LogOut, Menu, Settings, TriangleAlert, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const handleLogout = () => {
@@ -17,8 +19,23 @@ export default function Navbar() {
     router.push("/");
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        accountMenuRef.current &&
+        !accountMenuRef.current.contains(event.target as Node)
+      ) {
+        setAccountOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const authCtaHref = user ? "/dashboard" : "/register";
   const authCtaLabel = user ? "Dashboard" : "Get Started";
+  const emailVerified = Boolean(user?.emailVerified || user?.emailVerifiedAt);
 
   return (
     <nav className="sticky top-0 z-40 bg-white border-b border-neutral-200">
@@ -32,51 +49,96 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-6">
             <Link
               href="/campaigns"
-              className="text-sm text-neutral-600 hover:text-black transition-colors"
+              className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
             >
               Browse
             </Link>
             {user && (
-              <>
-                <Link
-                  href="/dashboard"
-                  className="text-sm text-neutral-600 hover:text-black transition-colors"
-                >
-                  Dashboard
-                </Link>
-                {user.role === "admin" && (
-                  <Link
-                    href="/admin"
-                    className="text-sm text-neutral-600 hover:text-black transition-colors"
-                  >
-                    Admin
-                  </Link>
-                )}
-              </>
+              <Link
+                href="/dashboard"
+                className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+              >
+                Dashboard
+              </Link>
             )}
           </div>
 
           <div className="hidden md:flex items-center gap-3">
             {user ? (
-              <>
-                <Link href="/profile">
-                  <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-medium overflow-hidden">
-                    {user.profileImage ? (
-                      <img
-                        key={user.profileImage}
-                        src={`${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:4000"}${user.profileImage}`}
-                        alt={user.name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      user.name[0].toUpperCase()
-                    )}
+              <div className="relative" ref={accountMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setAccountOpen((open) => !open)}
+                  className={`inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-2 bg-transparent shadow-none transition-colors hover:bg-[var(--secondary-hover)] ${
+                    emailVerified
+                      ? "border-sky-200 text-sky-700"
+                      : "border-amber-200 text-amber-700"
+                  }`}
+                  aria-label="Open account menu"
+                >
+                  {user.profileImage ? (
+                    <img
+                      key={user.profileImage}
+                      src={`${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:4000"}${user.profileImage}`}
+                      alt={user.name}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold text-[var(--foreground)]">
+                      {user.name[0].toUpperCase()}
+                    </div>
+                  )}
+                </button>
+
+                {accountOpen && (
+                  <div className="absolute right-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--secondary)] text-[var(--foreground)] shadow-lg">
+                    <div
+                      className={`border-b px-4 py-4 ${emailVerified ? "border-sky-200" : "border-amber-200"}`}
+                    >
+                      <p className="text-sm font-semibold">{user.name}</p>
+                      <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                        {user.email}
+                      </p>
+                      {!emailVerified ? (
+                        <Link
+                          href="/profile"
+                          onClick={() => setAccountOpen(false)}
+                          className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 hover:underline"
+                        >
+                          <TriangleAlert size={14} />
+                          Verify email
+                        </Link>
+                      ) : (
+                        <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-sky-700">
+                          <TriangleAlert size={14} />
+                          Email verified
+                        </div>
+                      )}
+                    </div>
+
+                    <Link
+                      href="/profile"
+                      onClick={() => setAccountOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-[var(--secondary-hover)]"
+                    >
+                      <Settings size={16} />
+                      Account Settings
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAccountOpen(false);
+                        handleLogout();
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-left transition-colors hover:bg-[var(--secondary-hover)]"
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
                   </div>
-                </Link>
-                <Button variant="outline" size="sm" onClick={handleLogout}>
-                  Sign Out
-                </Button>
-              </>
+                )}
+              </div>
             ) : (
               <>
                 <Link href="/login">
@@ -103,7 +165,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t border-neutral-200 px-4 py-4 space-y-3">
+        <div className="md:hidden bg-[var(--secondary)] border-t border-[var(--border)] px-4 py-4 space-y-3">
           <Link
             href="/campaigns"
             className="block text-sm py-2"
@@ -115,7 +177,7 @@ export default function Navbar() {
             <>
               <Link
                 href="/dashboard"
-                className="block text-sm py-2"
+                className="block text-sm py-2 text-[var(--foreground)]"
                 onClick={() => setMenuOpen(false)}
               >
                 Dashboard
@@ -123,7 +185,7 @@ export default function Navbar() {
               {user.role === "admin" && (
                 <Link
                   href="/admin"
-                  className="block text-sm py-2"
+                  className="block text-sm py-2 text-[var(--foreground)]"
                   onClick={() => setMenuOpen(false)}
                 >
                   Admin Panel
@@ -131,19 +193,29 @@ export default function Navbar() {
               )}
               <Link
                 href="/profile"
-                className="block text-sm py-2"
+                className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
+                  emailVerified
+                    ? "text-sky-700 hover:bg-sky-50"
+                    : "text-amber-700 hover:bg-amber-50"
+                }`}
                 onClick={() => setMenuOpen(false)}
               >
-                Profile
+                {emailVerified ? (
+                  <Settings size={16} />
+                ) : (
+                  <TriangleAlert size={16} />
+                )}
+                Account Settings
               </Link>
               <button
                 onClick={() => {
                   handleLogout();
                   setMenuOpen(false);
                 }}
-                className="block text-sm py-2 text-red-600"
+                className="flex w-full items-center gap-2 py-2 text-sm text-left text-red-600"
               >
-                Sign Out
+                <LogOut size={16} />
+                Logout
               </button>
             </>
           ) : (

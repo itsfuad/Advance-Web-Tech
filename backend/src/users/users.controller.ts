@@ -13,13 +13,18 @@ import {
   Query,
   ParseIntPipe,
   DefaultValuePipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from './users.service';
-import { UpdateProfileDto, ChangePasswordDto, UpdateUserStatusDto } from './user.dto';
+import {
+  UpdateProfileDto,
+  ChangePasswordDto,
+  UpdateUserStatusDto,
+} from './user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/decorators';
@@ -75,7 +80,15 @@ export class UsersController {
     @Body(ValidationPipe) dto: UpdateProfileDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    const profileImage = file ? `/uploads/profiles/${file.filename}` : undefined;
+    if (!req.user?.emailVerified) {
+      throw new ForbiddenException(
+        'Please verify your email before updating your profile',
+      );
+    }
+
+    const profileImage = file
+      ? `/uploads/profiles/${file.filename}`
+      : undefined;
     return this.usersService.updateProfile(req.user.id, dto, profileImage);
   }
 
@@ -87,7 +100,10 @@ export class UsersController {
   @Patch(':id/status')
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
-  updateStatus(@Param('id') id: string, @Body(ValidationPipe) dto: UpdateUserStatusDto) {
+  updateStatus(
+    @Param('id') id: string,
+    @Body(ValidationPipe) dto: UpdateUserStatusDto,
+  ) {
     return this.usersService.updateStatus(id, dto);
   }
 }

@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class RegisterDto {
   @IsEmail()
@@ -38,10 +38,10 @@ export class ResetPasswordDto {
   newPassword: string;
 }
 
-export class VerifyOtpDto {
+export class VerifyEmailDto {
   @IsEmail()
   email: string;
 
   @IsString()
-  otp: string;
+  token: string;
 }

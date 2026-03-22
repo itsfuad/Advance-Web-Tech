@@ -7,12 +7,13 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"scripts/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint": "eslint \"{src,scripts,test}/**/*.ts\" --fix",
+    "db:dummy": "ts-node src/seed/dummy.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -40,7 +41,8 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.28",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "typeorm-ts-node-commonjs": "^0.0.10"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
