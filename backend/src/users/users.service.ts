@@ -50,6 +50,20 @@ export class UsersService {
     };
   }
 
+  async getPublicProfile(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user || user.status !== UserStatus.ACTIVE) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      profileImage: user.profileImage,
+      createdAt: user.createdAt,
+    };
+  }
+
   async updateProfile(
     userId: string,
     dto: UpdateProfileDto,

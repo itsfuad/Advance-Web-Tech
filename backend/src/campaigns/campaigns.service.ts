@@ -87,6 +87,20 @@ export class CampaignsService {
     return { data, total, page, limit };
   }
 
+  async findByCreatorPublic(creatorId: string, page = 1, limit = 12) {
+    const qb = this.campaignRepository
+      .createQueryBuilder('campaign')
+      .leftJoinAndSelect('campaign.creator', 'creator')
+      .where('campaign.creatorId = :creatorId', { creatorId })
+      .andWhere('campaign.status != :frozen', { frozen: CampaignStatus.FROZEN })
+      .orderBy('campaign.createdAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    const [data, total] = await qb.getManyAndCount();
+    return { data, total, page, limit };
+  }
+
   async create(creatorId: string, dto: CreateCampaignDto, coverImage?: string) {
     const campaign = this.campaignRepository.create({
       ...dto,

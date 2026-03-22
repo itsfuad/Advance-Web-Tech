@@ -27,7 +27,7 @@ import {
 } from './user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/decorators';
+import { Public, Roles } from '../auth/decorators';
 import { UserRole } from './user.entity';
 
 @Controller('users')
@@ -48,6 +48,12 @@ export class UsersController {
   @Get('me')
   getMe(@Request() req) {
     return this.usersService.findOne(req.user.id);
+  }
+
+  @Public()
+  @Get('public/:id')
+  getPublicProfile(@Param('id') id: string) {
+    return this.usersService.getPublicProfile(id);
   }
 
   @Get(':id')

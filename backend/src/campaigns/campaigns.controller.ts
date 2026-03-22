@@ -94,6 +94,16 @@ export class CampaignsController {
   }
 
   @Public()
+  @Get('creator/:id')
+  getCreatorCampaigns(
+    @Param('id') id: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(12), ParseIntPipe) limit: number,
+  ) {
+    return this.campaignsService.findByCreatorPublic(id, page, limit);
+  }
+
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.campaignsService.findOne(id);

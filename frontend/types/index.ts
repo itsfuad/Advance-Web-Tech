@@ -11,6 +11,13 @@ export interface User {
   updatedAt: string;
 }
 
+export interface PublicUser {
+  id: string;
+  name: string;
+  profileImage?: string;
+  createdAt: string;
+}
+
 export interface Campaign {
   id: string;
   title: string;

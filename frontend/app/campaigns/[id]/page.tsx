@@ -197,7 +197,17 @@ export default function CampaignDetailPage() {
               )}
               <h1 className="text-3xl font-bold mt-1">{campaign.title}</h1>
               <p className="text-neutral-500 text-sm mt-1">
-                by {campaign.creator?.name}
+                by{" "}
+                {campaign.creatorId ? (
+                  <Link
+                    href={`/users/${campaign.creatorId}`}
+                    className="hover:text-neutral-900 hover:underline"
+                  >
+                    {campaign.creator?.name || "Unknown"}
+                  </Link>
+                ) : (
+                  campaign.creator?.name || "Unknown"
+                )}
               </p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
