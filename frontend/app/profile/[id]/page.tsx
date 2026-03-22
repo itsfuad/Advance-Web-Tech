@@ -473,74 +473,79 @@ export default function ProfilePage() {
         </>
       )}
 
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Campaigns</h2>
-        <span className="text-sm text-neutral-500">
-          {total} campaign{total !== 1 ? "s" : ""}
-        </span>
-      </div>
-
-      {campaignsLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="h-72 bg-neutral-100 rounded-lg animate-pulse"
-            />
-          ))}
-        </div>
-      ) : campaigns.length === 0 ? (
-        <div className="text-center py-16 text-neutral-500">
-          No campaigns to show
-        </div>
-      ) : (
+      {/* Hide campaigns section for admin users viewing their own profile (admins cannot create campaigns) */}
+      {!(isSelf && user?.role === "admin") && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {campaigns.map((campaign) => (
-              <CampaignCard key={campaign.id} campaign={campaign} />
-            ))}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Campaigns</h2>
+            <span className="text-sm text-neutral-500">
+              {total} campaign{total !== 1 ? "s" : ""}
+            </span>
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-10 flex-wrap">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                Previous
-              </Button>
-              <div className="flex items-center gap-2">
-                {visiblePages.map((p, i) =>
-                  p === "ellipsis" ? (
-                    <span
-                      key={`ellipsis-${i}`}
-                      className="px-2 text-sm text-neutral-400"
-                    >
-                      …
-                    </span>
-                  ) : (
-                    <Button
-                      key={p}
-                      variant={p === page ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setPage(p)}
-                    >
-                      {p}
-                    </Button>
-                  ),
-                )}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-              >
-                Next
-              </Button>
+          {campaignsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-72 bg-neutral-100 rounded-lg animate-pulse"
+                />
+              ))}
             </div>
+          ) : campaigns.length === 0 ? (
+            <div className="text-center py-16 text-neutral-500">
+              No campaigns to show
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {campaigns.map((campaign) => (
+                  <CampaignCard key={campaign.id} campaign={campaign} />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-10 flex-wrap">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                  >
+                    Previous
+                  </Button>
+                  <div className="flex items-center gap-2">
+                    {visiblePages.map((p, i) =>
+                      p === "ellipsis" ? (
+                        <span
+                          key={`ellipsis-${i}`}
+                          className="px-2 text-sm text-neutral-400"
+                        >
+                          …
+                        </span>
+                      ) : (
+                        <Button
+                          key={p}
+                          variant={p === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setPage(p)}
+                        >
+                          {p}
+                        </Button>
+                      ),
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </>
       )}

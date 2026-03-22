@@ -466,28 +466,114 @@ export default function AdminPage() {
                 <CardTitle className="text-base">Donation Flow</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-end gap-2 h-24">
-                  {stats.recentDonations.map((d, index) => (
-                    <div key={d.id} className="flex-1">
-                      <div
-                        className="w-full rounded bg-neutral-900/80"
-                        style={{
-                          height: `${Math.max(
-                            12,
-                            Math.min(
-                              90,
-                              (d.amount / (stats.totalRaised || 1)) * 120,
-                            ),
-                          )}%`,
-                          opacity: 0.4 + index * 0.1,
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-2 text-xs text-neutral-500">
-                  Recent donations scaled by amount
-                </div>
+                {stats.recentDonations.length === 0 ? (
+                  <div className="py-6 text-center text-sm text-neutral-500">No donation data available</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                    {/* Bar chart */}
+                    {(() => {
+                      const donations = stats.recentDonations;
+                      const max = Math.max(...donations.map((r) => r.amount), 1);
+                      return (
+                        <div className="flex flex-col items-center h-36">
+                          <div className="text-xs text-neutral-500 mb-2">Recent donations (bar)</div>
+                          <div className="flex items-end gap-2 h-full w-full">
+                            {donations.map((d) => {
+                              const hPct = Math.max(6, (d.amount / max) * 100);
+                              return (
+                                <div key={d.id} className="flex-1 flex flex-col items-center">
+                                  <div className="w-11/12 bg-emerald-500 rounded-t transition-all" style={{ height: `${hPct}%` }} />
+                                  <div className="text-xs text-center mt-2 text-neutral-600 truncate w-full">{formatCurrency(d.amount)}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Pie chart (donor distribution) */}
+                    {(() => {
+                      const donations = stats.recentDonations;
+                      const byDonor: Record<string, number> = {};
+                      donations.forEach((d) => {
+                        const name = d.donor?.name || 'Anonymous';
+                        byDonor[name] = (byDonor[name] || 0) + d.amount;
+                      });
+                      const entries = Object.entries(byDonor).sort((a, b) => b[1] - a[1]);
+                      const total = entries.reduce((s, e) => s + e[1], 0) || 1;
+                      const radius = 36;
+                      const circumference = 2 * Math.PI * radius;
+                      let offset = 0;
+                      return (
+                        <div className="flex flex-col items-center h-36 justify-center">
+                          <div className="text-xs text-neutral-500 mb-2">Donor distribution (pie)</div>
+                          <svg width="80" height="80" viewBox="-50 -50 100 100" className="mx-auto">
+                            {/* background ring */}
+                            <circle r={radius} cx={0} cy={0} fill="transparent" stroke="#f3f4f6" strokeWidth={18} />
+                            {entries.map(([name, value], i) => {
+                              const portion = value / total;
+                              const dash = portion * circumference;
+                              const strokeDasharray = `${dash} ${circumference - dash}`;
+                              const colorClasses = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+                              const color = colorClasses[i % colorClasses.length];
+                              const start = offset;
+                              const dashoffset = -start * circumference;
+                              offset += portion;
+                              return (
+                                <circle key={name} r={radius} cx={0} cy={0} fill="transparent" stroke={color} strokeWidth={18} strokeDasharray={strokeDasharray} strokeDashoffset={dashoffset} />
+                              );
+                            })}
+                          </svg>
+                          <div className="mt-2 text-xs text-neutral-600 text-center max-w-[120px]">
+                            {entries.slice(0, 3).map(([name, value]) => (
+                              <div key={name} className="truncate">
+                                <span className="font-medium">{name}</span>: {formatCurrency(value)}
+                              </div>
+                            ))}
+                            {entries.length > 3 && <div className="text-xs text-neutral-400">and {entries.length - 3} more</div>}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Curve chart (cumulative) */}
+                    {(() => {
+                      const donations = [...stats.recentDonations].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+                      const cum: number[] = [];
+                      let sum = 0;
+                      donations.forEach((d) => {
+                        sum += d.amount;
+                        cum.push(sum);
+                      });
+                      const maxCum = Math.max(...cum, 1);
+                      const w = 200;
+                      const h = 80;
+                      const pointsArr = cum.map((c, i) => {
+                        const x = (i / Math.max(1, cum.length - 1)) * w;
+                        const y = h - (c / maxCum) * h;
+                        return `${x},${y}`;
+                      });
+                      const points = pointsArr.join(' ');
+                      const areaPoints = pointsArr.length ? pointsArr.join(' ') + ` ${w},${h} 0,${h}` : '';
+                      return (
+                        <div className="flex flex-col h-36">
+                          <div className="text-xs text-neutral-500 mb-2">Cumulative donations (curve)</div>
+                          <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full flex-1">
+                            {pointsArr.length > 0 && (
+                              <>
+                                <polygon points={areaPoints} fill="rgba(59,130,246,0.06)" stroke="none" />
+                                <polyline points={points} fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+                              </>
+                            )}
+                          </svg>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+
+                <div className="mt-2 text-xs text-neutral-500">Recent donations scaled by amount</div>
               </CardContent>
             </Card>
           </div>
