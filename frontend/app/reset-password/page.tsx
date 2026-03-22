@@ -10,6 +10,7 @@ import api from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import {
   Card,
@@ -172,9 +173,8 @@ export default function ResetPasswordPage() {
 
             <div className="space-y-1.5">
               <Label htmlFor="newPassword">New Password</Label>
-              <Input
+              <PasswordInput
                 id="newPassword"
-                type="password"
                 placeholder="Min. 8 characters"
                 {...register("newPassword")}
               />
@@ -187,9 +187,8 @@ export default function ResetPasswordPage() {
 
             <div className="space-y-1.5">
               <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <Input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 placeholder="Repeat new password"
                 {...register("confirmPassword")}
               />

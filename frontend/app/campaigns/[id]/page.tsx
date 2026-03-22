@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -62,6 +62,14 @@ export default function CampaignDetailPage() {
     expiryDate: "12/26",
     cvv: "123",
   });
+  const [cardBrand, setCardBrand] = useState<
+    "visa" | "mastercard" | "amex" | "discover" | "unknown" | null
+  >("visa");
+  const [cardStatus, setCardStatus] = useState<
+    "valid" | "invalid" | "incomplete" | "unsupported"
+  >("incomplete");
+  const cardInputRef = useRef<HTMLInputElement>(null);
+  const [cardCursor, setCardCursor] = useState<number | null>(null);
 
   const emailVerified = Boolean(user?.emailVerified || user?.emailVerifiedAt);
 
@@ -128,6 +136,54 @@ export default function CampaignDetailPage() {
     }
   };
 
+  const getCardMeta = (digits: string) => {
+    const brand = detectCardBrand(digits);
+    const status = validateCardNumber(digits, brand);
+    return { brand, status };
+  };
+
+  const normalizeCardInput = (raw: string) => {
+    const digits = raw.replace(/\D/g, "");
+    const brand = detectCardBrand(digits);
+    const formatted = formatCardNumber(digits, brand);
+    const status = validateCardNumber(digits, brand);
+    return { brand, formatted, status };
+  };
+
+  const digitIndexToPos = (formatted: string, digitIndex: number) => {
+    if (digitIndex <= 0) return 0;
+    let count = 0;
+    for (let i = 0; i < formatted.length; i += 1) {
+      if (/\d/.test(formatted[i]!)) count += 1;
+      if (count === digitIndex) return i + 1;
+    }
+    return formatted.length;
+  };
+
+  const resetDonationForm = () => {
+    const defaultNumber = "4242424242424242";
+    const meta = getCardMeta(defaultNumber);
+    setDonationForm({
+      amount: "",
+      message: "",
+      cardNumber: formatCardNumber(defaultNumber, meta.brand),
+      cardHolder: "",
+      expiryDate: "12/26",
+      cvv: "123",
+    });
+    setCardBrand(meta.brand);
+    setCardStatus(meta.status);
+    setDonateError("");
+    setDonateSuccess(false);
+    setPreviewLoading(false);
+  };
+
+  useEffect(() => {
+    if (!showDonateModal) {
+      resetDonationForm();
+    }
+  }, [showDonateModal]);
+
   const handleReport = async () => {
     if (!reportReason.trim()) return;
     setReportLoading(true);
@@ -151,6 +207,83 @@ export default function CampaignDetailPage() {
     }
   };
 
+  const detectCardBrand = (digits: string) => {
+    if (/^4/.test(digits)) return "visa";
+    if (/^(5[1-5]|2[2-7])/.test(digits)) return "mastercard";
+    if (/^3[47]/.test(digits)) return "amex";
+    if (/^6(011|5|4[4-9]|22)/.test(digits)) return "discover";
+    return digits.length >= 6 ? "unknown" : null;
+  };
+
+  const formatCardNumber = (digits: string, brand: string | null) => {
+    const maxLength =
+      brand === "amex"
+        ? 15
+        : brand === "visa"
+          ? 19
+          : brand === "mastercard"
+            ? 16
+            : brand === "discover"
+              ? 16
+              : 19;
+    const clean = digits.slice(0, maxLength);
+    if (brand === "amex") {
+      const p1 = clean.slice(0, 4);
+      const p2 = clean.slice(4, 10);
+      const p3 = clean.slice(10, 15);
+      return [p1, p2, p3].filter(Boolean).join(" ");
+    }
+    return clean.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+  };
+
+  const luhnCheck = (digits: string) => {
+    let sum = 0;
+    let shouldDouble = false;
+    for (let i = digits.length - 1; i >= 0; i -= 1) {
+      let digit = parseInt(digits[i]!, 10);
+      if (shouldDouble) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+    return sum % 10 === 0;
+  };
+
+  const USE_LUHN = false;
+  const validateCardNumber = (digits: string, brand: string | null) => {
+    if (!digits) return "incomplete";
+    if (brand === "unknown")
+      return digits.length >= 12 ? "unsupported" : "incomplete";
+    if (!brand) return "incomplete";
+    const expectedLengths =
+      brand === "amex" ? [15] : brand === "visa" ? [13, 16, 19] : [16];
+    if (!expectedLengths.includes(digits.length)) return "incomplete";
+    if (USE_LUHN) {
+      return luhnCheck(digits) ? "valid" : "invalid";
+    }
+    return "valid";
+  };
+
+  useEffect(() => {
+    const digits = donationForm.cardNumber.replace(/\D/g, "");
+    const meta = getCardMeta(digits);
+    setCardBrand(meta.brand);
+    setCardStatus(meta.status);
+  }, [donationForm.cardNumber]);
+
+  useEffect(() => {
+    if (cardCursor === null) return;
+    const input = cardInputRef.current;
+    if (!input) return;
+    const pos = digitIndexToPos(donationForm.cardNumber, cardCursor);
+    requestAnimationFrame(() => {
+      input.setSelectionRange(pos, pos);
+    });
+    setCardCursor(null);
+  }, [donationForm.cardNumber, cardCursor]);
+
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-10">
@@ -169,9 +302,13 @@ export default function CampaignDetailPage() {
   );
   const isOwner = user?.id === campaign.creatorId;
   const isAdmin = user?.role === "admin";
+
   const canDonate = Boolean(
     user && emailVerified && !isOwner && campaign.status === "active",
   );
+  const cardIsValid = cardStatus === "valid";
+  const showCardStatus =
+    donationForm.cardNumber.replace(/\D/g, "").length >= 12;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -399,11 +536,9 @@ export default function CampaignDetailPage() {
                   min="1"
                   placeholder="25"
                   value={donationForm.amount}
-                  onChange={(e) => {
-                    setPreviewLoading(true);
-                    setDonationForm((f) => ({ ...f, amount: e.target.value }));
-                    window.setTimeout(() => setPreviewLoading(false), 150);
-                  }}
+                  onChange={(e) =>
+                    setDonationForm((f) => ({ ...f, amount: e.target.value }))
+                  }
                 />
               </div>
 
@@ -441,27 +576,112 @@ export default function CampaignDetailPage() {
                 <div className="space-y-3">
                   <div className="space-y-1.5">
                     <Label>Card Number</Label>
-                    <Input
-                      placeholder="4242 4242 4242 4242"
-                      value={donationForm.cardNumber}
-                      onChange={(e) =>
-                        setDonationForm((f) => ({
-                          ...f,
-                          cardNumber: e.target.value,
-                        }))
-                      }
-                    />
+                    <div className="relative">
+                      <Input
+                        ref={cardInputRef}
+                        placeholder="4242 4242 4242 4242"
+                        inputMode="numeric"
+                        autoComplete="cc-number"
+                        className="pr-24 font-mono tracking-wider"
+                        value={donationForm.cardNumber}
+                        onChange={(e) => {
+                          const raw = e.target.value;
+                          const cursor = e.target.selectionStart ?? raw.length;
+                          const digitsLeft = raw
+                            .slice(0, cursor)
+                            .replace(/\D/g, "").length;
+                          const { brand, formatted, status } =
+                            normalizeCardInput(raw);
+                          setDonationForm((f) => ({
+                            ...f,
+                            cardNumber: formatted,
+                          }));
+                          setCardBrand(brand);
+                          setCardStatus(status);
+                          setCardCursor(digitsLeft);
+                        }}
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          const text = e.clipboardData.getData("text");
+                          const { brand, formatted, status } =
+                            normalizeCardInput(text);
+                          setDonationForm((f) => ({
+                            ...f,
+                            cardNumber: formatted,
+                          }));
+                          setCardBrand(brand);
+                          setCardStatus(status);
+                          setCardCursor(formatted.replace(/\D/g, "").length);
+                        }}
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                        {cardBrand === "visa" && (
+                          <Image
+                            src="/cards/visa.svg"
+                            alt="Visa"
+                            width={28}
+                            height={18}
+                          />
+                        )}
+                        {cardBrand === "mastercard" && (
+                          <Image
+                            src="/cards/mastercard.svg"
+                            alt="Mastercard"
+                            width={28}
+                            height={18}
+                          />
+                        )}
+                        {cardBrand === "amex" && (
+                          <Image
+                            src="/cards/amex.svg"
+                            alt="American Express"
+                            width={28}
+                            height={18}
+                          />
+                        )}
+                        {cardBrand === "discover" && (
+                          <Image
+                            src="/cards/discover.svg"
+                            alt="Discover"
+                            width={28}
+                            height={18}
+                          />
+                        )}
+                        {cardBrand === "unknown" && (
+                          <span className="rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-red-600">
+                            INVALID
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {showCardStatus && cardStatus === "invalid" && (
+                      <p className="text-xs text-red-500">
+                        Invalid card number.
+                      </p>
+                    )}
+                    {showCardStatus && cardStatus === "unsupported" && (
+                      <p className="text-xs text-red-500">
+                        Unsupported card type.
+                      </p>
+                    )}
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label>Expiry</Label>
                       <Input
                         placeholder="MM/YY"
+                        inputMode="numeric"
+                        autoComplete="cc-exp"
                         value={donationForm.expiryDate}
                         onChange={(e) =>
                           setDonationForm((f) => ({
                             ...f,
-                            expiryDate: e.target.value,
+                            expiryDate: e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 4)
+                              .replace(/(\d{2})(\d{0,2})/, (_m, a, b) =>
+                                b ? `${a}/${b}` : a,
+                              ),
                           }))
                         }
                       />
@@ -470,11 +690,13 @@ export default function CampaignDetailPage() {
                       <Label>CVV</Label>
                       <Input
                         placeholder="123"
+                        inputMode="numeric"
+                        autoComplete="cc-csc"
                         value={donationForm.cvv}
                         onChange={(e) =>
                           setDonationForm((f) => ({
                             ...f,
-                            cvv: e.target.value,
+                            cvv: e.target.value.replace(/\D/g, "").slice(0, 4),
                           }))
                         }
                       />
@@ -500,24 +722,15 @@ export default function CampaignDetailPage() {
                     parseFloat(donationForm.amount) <= 0
                   }
                 >
-                  {donating ? (
-                    <span className="inline-flex items-center gap-2">
-                      <Loader2 size={16} className="animate-spin" />
-                      Processing...
-                    </span>
-                  ) : previewLoading ? (
-                    <span className="inline-flex items-center gap-2">
-                      <Loader2 size={16} className="animate-spin" />
-                      Preparing...
-                    </span>
-                  ) : (
-                    <>
-                      Donate{" "}
-                      {donationForm.amount
-                        ? formatCurrency(parseFloat(donationForm.amount))
-                        : ""}
-                    </>
-                  )}
+                  {previewLoading
+                    ? "Preparing..."
+                    : donating
+                      ? "Processing..."
+                      : `Donate ${
+                          donationForm.amount
+                            ? formatCurrency(parseFloat(donationForm.amount))
+                            : ""
+                        }`}
                 </Button>
               </DialogFooter>
             </div>

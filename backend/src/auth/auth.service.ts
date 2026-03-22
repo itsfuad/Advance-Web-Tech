@@ -87,7 +87,7 @@ export class AuthService {
       throw new UnauthorizedException('Your account has been banned');
     }
     if (user.status === UserStatus.BLOCKED) {
-      throw new UnauthorizedException('Your account is blocked');
+      throw new UnauthorizedException('Your account is blocked. Contact support');
     }
 
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);

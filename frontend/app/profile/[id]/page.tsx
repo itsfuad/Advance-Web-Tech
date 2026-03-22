@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import CampaignCard from "@/components/campaign/CampaignCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, Camera, MailCheck } from "lucide-react";
@@ -327,7 +328,19 @@ export default function ProfilePage() {
             <CardContent>
               <form onSubmit={handleProfileSave} className="space-y-5">
                 <div className="flex items-center gap-5">
-                  <div className="relative">
+                  <div
+                    className="relative cursor-pointer"
+                    onClick={() => fileRef.current?.click()}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        fileRef.current?.click();
+                      }
+                    }}
+                    aria-label="Change profile photo"
+                  >
                     <div className="relative w-20 h-20 rounded-full bg-neutral-200 overflow-hidden">
                       {imagePreview || avatarUrl ? (
                         <Image
@@ -417,8 +430,7 @@ export default function ProfilePage() {
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div className="space-y-1.5">
                   <Label>Current Password</Label>
-                  <Input
-                    type="password"
+                  <PasswordInput
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     required
@@ -427,8 +439,7 @@ export default function ProfilePage() {
 
                 <div className="space-y-1.5">
                   <Label>New Password</Label>
-                  <Input
-                    type="password"
+                  <PasswordInput
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
@@ -437,8 +448,7 @@ export default function ProfilePage() {
 
                 <div className="space-y-1.5">
                   <Label>Confirm New Password</Label>
-                  <Input
-                    type="password"
+                  <PasswordInput
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required

@@ -11,7 +11,7 @@ const AVATARS = [
   'https://i.pravatar.cc/300?img=45',
   'https://i.pravatar.cc/300?img=56',
   'https://i.pravatar.cc/300?img=68',
-  'https://i.pravatar.cc/300?img=72',
+  'https://i.pravatar.cc/300?img=7',
   'https://i.pravatar.cc/300?img=15',
   'https://i.pravatar.cc/300?img=22',
 ];

@@ -31,14 +31,27 @@ const API_BASE =
 
 export function resolveImageUrl(src?: string | null): string {
   if (!src) return "";
-  if (
-    /^(https?:)?\/\//i.test(src) ||
-    src.startsWith("data:") ||
-    src.startsWith("blob:")
-  ) {
-    return src;
+  const trimmed = src.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("data:") || trimmed.startsWith("blob:")) {
+    return trimmed;
   }
-  return src.startsWith("/") ? src : `${API_BASE}/${src}`;
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed);
+      if (parsed.hostname === "i.pravatar.cc") {
+        const img = parsed.searchParams.get("img");
+        if (img) {
+          const seed = `img-${img}`;
+          return `https://i.pravatar.cc/300?u=${encodeURIComponent(seed)}`;
+        }
+      }
+    } catch {
+      // fall through to return original
+    }
+    return trimmed;
+  }
+  return trimmed.startsWith("/") ? trimmed : `${API_BASE}/${trimmed}`;
 }
 
 export function getApiErrorMessage(err: unknown, fallback: string): string {
