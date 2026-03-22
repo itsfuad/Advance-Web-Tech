@@ -9,8 +9,8 @@ export class EmailService {
 
   constructor(private configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
-      host: this.configService.get('SMTP_HOST', 'smtp.gmail.com'),
-      port: parseInt(this.configService.get('SMTP_PORT', '587')),
+      host: this.configService.get('SMTP_HOST'),
+      port: parseInt(this.configService.get('SMTP_PORT', '587'), 10),
       secure: false,
       auth: {
         user: this.configService.get('SMTP_USER'),
@@ -19,11 +19,13 @@ export class EmailService {
     });
   }
 
-  async sendOtpEmail(to: string, otp: string, name: string): Promise<void> {
-    const fromEmail = this.configService.get(
-      'SMTP_FROM',
-      'noreply@fundrise.com',
-    );
+  async sendOtpEmail(
+    to: string,
+    otp: string,
+    name: string,
+    expiresInMinutes: number,
+  ): Promise<void> {
+    const fromEmail = this.configService.get('SMTP_FROM');
     const mailOptions = {
       from: `"FundRise" <${fromEmail}>`,
       to,
@@ -36,7 +38,7 @@ export class EmailService {
           <div style="padding: 32px;">
             <h2 style="color: #000; margin-top: 0;">Password Reset Request</h2>
             <p style="color: #333;">Hi ${name},</p>
-            <p style="color: #333;">You requested a password reset. Use the OTP below to reset your password. This code expires in <strong>10 minutes</strong>.</p>
+            <p style="color: #333;">You requested a password reset. Use the OTP below to reset your password. This code expires in <strong>${expiresInMinutes} minutes</strong>.</p>
             <div style="background: #f5f5f5; border: 2px dashed #000; border-radius: 8px; padding: 24px; text-align: center; margin: 24px 0;">
               <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #000;">${otp}</span>
             </div>

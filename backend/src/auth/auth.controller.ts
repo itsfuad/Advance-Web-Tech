@@ -60,6 +60,12 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('resend-verification')
+  resendVerification(@Request() req) {
+    return this.authService.resendEmailVerification(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Delete('me')
   deleteMe(@Request() req) {
     return this.authService.deleteUnverifiedAccount(req.user.id);

@@ -1,11 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
-import { LogOut, Menu, Settings, TriangleAlert, X } from "lucide-react";
+import {
+  CheckCircle2,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Settings,
+  TriangleAlert,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { resolveImageUrl } from "@/lib/utils";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -33,8 +43,8 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const authCtaHref = user ? "/dashboard" : "/register";
-  const authCtaLabel = user ? "Dashboard" : "Get Started";
+  const authCtaHref = user ? "/campaigns/new" : "/register";
+  const authCtaLabel = user ? "Start Campaign" : "Get Started";
   const emailVerified = Boolean(user?.emailVerified || user?.emailVerifiedAt);
 
   return (
@@ -45,23 +55,7 @@ export default function Navbar() {
             <span className="text-xl font-bold tracking-tight">FUNDRISE</span>
           </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link
-              href="/campaigns"
-              className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-            >
-              Browse
-            </Link>
-            {user && (
-              <Link
-                href="/dashboard"
-                className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-              >
-                Dashboard
-              </Link>
-            )}
-          </div>
+          <div className="hidden md:flex items-center gap-6" />
 
           <div className="hidden md:flex items-center gap-3">
             {user ? (
@@ -77,10 +71,12 @@ export default function Navbar() {
                   aria-label="Open account menu"
                 >
                   {user.profileImage ? (
-                    <img
+                    <Image
                       key={user.profileImage}
-                      src={`${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:4000"}${user.profileImage}`}
+                      src={resolveImageUrl(user.profileImage)}
                       alt={user.name}
+                      width={32}
+                      height={32}
                       className="h-8 w-8 rounded-full object-cover"
                     />
                   ) : (
@@ -101,7 +97,7 @@ export default function Navbar() {
                       </p>
                       {!emailVerified ? (
                         <Link
-                          href="/profile"
+                          href={`/profile/${user.id}`}
                           onClick={() => setAccountOpen(false)}
                           className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 hover:underline"
                         >
@@ -109,20 +105,28 @@ export default function Navbar() {
                           Verify email
                         </Link>
                       ) : (
-                        <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-sky-700">
-                          <TriangleAlert size={14} />
+                        <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+                          <CheckCircle2 size={14} />
                           Email verified
                         </div>
                       )}
                     </div>
 
                     <Link
-                      href="/profile"
+                      href={`/profile/${user.id}`}
                       onClick={() => setAccountOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-[var(--secondary-hover)]"
                     >
                       <Settings size={16} />
                       Account Settings
+                    </Link>
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setAccountOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-[var(--secondary-hover)]"
+                    >
+                      <LayoutDashboard size={16} />
+                      Dashboard
                     </Link>
 
                     <button
@@ -175,13 +179,6 @@ export default function Navbar() {
           </Link>
           {user ? (
             <>
-              <Link
-                href="/dashboard"
-                className="block text-sm py-2 text-[var(--foreground)]"
-                onClick={() => setMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
               {user.role === "admin" && (
                 <Link
                   href="/admin"
@@ -192,7 +189,7 @@ export default function Navbar() {
                 </Link>
               )}
               <Link
-                href="/profile"
+                href={`/profile/${user.id}`}
                 className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
                   emailVerified
                     ? "text-sky-700 hover:bg-sky-50"
@@ -206,6 +203,14 @@ export default function Navbar() {
                   <TriangleAlert size={16} />
                 )}
                 Account Settings
+              </Link>
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--secondary-hover)]"
+                onClick={() => setMenuOpen(false)}
+              >
+                <LayoutDashboard size={16} />
+                Dashboard
               </Link>
               <button
                 onClick={() => {

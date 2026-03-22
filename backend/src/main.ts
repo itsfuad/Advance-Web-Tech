@@ -2,10 +2,12 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import * as fs from 'fs';
 import { join } from 'path';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const config = app.get(ConfigService);
 
   ['uploads/profiles', 'uploads/campaigns', 'uploads/tmp'].forEach((dir) => {
     const fullPath = join(process.cwd(), dir);
@@ -53,6 +55,16 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 4000;
+  const nodeEnv = config.get<string>('NODE_ENV', 'development');
+  if (nodeEnv !== 'production') {
+    console.log('[DEV] SMTP config loaded', {
+      host: config.get('SMTP_HOST'),
+      port: config.get('SMTP_PORT'),
+      user: config.get('SMTP_USER'),
+      from: config.get('SMTP_FROM'),
+      passSet: Boolean(config.get('SMTP_PASS')),
+    });
+  }
   await app.listen(port);
   console.log(`Backend running on http://localhost:${port}/api`);
 }

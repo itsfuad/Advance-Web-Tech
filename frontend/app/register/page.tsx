@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,8 +63,8 @@ export default function RegisterPage() {
       });
       login(res.data.access_token, res.data.user);
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Registration failed"));
     }
   };
 

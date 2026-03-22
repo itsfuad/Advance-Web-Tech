@@ -4,6 +4,7 @@ import CampaignCard from "@/components/campaign/CampaignCard";
 import { Button } from "@/components/ui/button";
 import { Campaign } from "@/types";
 import HomeCta from "@/components/home/HomeCta";
+import StatCounter from "@/components/home/StatCounter";
 
 async function getFeaturedCampaigns(): Promise<Campaign[]> {
   try {
@@ -53,21 +54,34 @@ export default async function HomePage() {
               <div className="flex justify-center mb-3">
                 <Target size={32} />
               </div>
-              <div className="text-3xl font-bold mb-1">1,000+</div>
+              <StatCounter
+                className="text-3xl font-bold mb-1"
+                target={1000}
+                suffix="+"
+              />
               <div className="text-neutral-500 text-sm">Campaigns Funded</div>
             </div>
             <div suppressHydrationWarning className="p-6">
               <div className="flex justify-center mb-3">
                 <Users size={32} />
               </div>
-              <div className="text-3xl font-bold mb-1">50,000+</div>
+              <StatCounter
+                className="text-3xl font-bold mb-1"
+                target={50000}
+                suffix="+"
+              />
               <div className="text-neutral-500 text-sm">Community Members</div>
             </div>
             <div suppressHydrationWarning className="p-6">
               <div className="flex justify-center mb-3">
                 <TrendingUp size={32} />
               </div>
-              <div className="text-3xl font-bold mb-1">$5M+</div>
+              <StatCounter
+                className="text-3xl font-bold mb-1"
+                target={5}
+                prefix="$"
+                suffix="M+"
+              />
               <div className="text-neutral-500 text-sm">Total Raised</div>
             </div>
           </div>

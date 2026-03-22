@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="bg-black text-white py-12 mt-auto">
@@ -6,21 +8,54 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-bold tracking-tight mb-3">FUNDRISE</h3>
             <p className="text-neutral-400 text-sm">
-              Empowering ideas through community funding. Start your campaign today.
+              Empowering ideas through community funding. Start your campaign
+              today.
             </p>
           </div>
           <div>
-            <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide">Platform</h4>
+            <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide">
+              Platform
+            </h4>
             <ul className="space-y-2 text-sm text-neutral-400">
-              <li><a href="/campaigns" className="hover:text-white transition-colors">Browse Campaigns</a></li>
-              <li><a href="/register" className="hover:text-white transition-colors">Start a Campaign</a></li>
+              <li>
+                <Link
+                  href="/campaigns"
+                  className="hover:text-white transition-colors"
+                >
+                  Browse Campaigns
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/register"
+                  className="hover:text-white transition-colors"
+                >
+                  Start a Campaign
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide">Account</h4>
+            <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide">
+              Account
+            </h4>
             <ul className="space-y-2 text-sm text-neutral-400">
-              <li><a href="/login" className="hover:text-white transition-colors">Sign In</a></li>
-              <li><a href="/register" className="hover:text-white transition-colors">Register</a></li>
+              <li>
+                <Link
+                  href="/login"
+                  className="hover:text-white transition-colors"
+                >
+                  Sign In
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/register"
+                  className="hover:text-white transition-colors"
+                >
+                  Register
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

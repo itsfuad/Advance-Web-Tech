@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import api from "@/lib/api";
 import { Campaign } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Upload, X } from "lucide-react";
-import { resolveImageUrl } from "@/lib/utils";
+import { getApiErrorMessage, resolveImageUrl } from "@/lib/utils";
 
 const CATEGORIES = [
   "Technology",
@@ -87,8 +88,8 @@ export default function EditCampaignPage() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       router.push(`/campaigns/${id}`);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to update campaign");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Failed to update campaign"));
     } finally {
       setLoading(false);
     }
@@ -126,11 +127,16 @@ export default function EditCampaignPage() {
               >
                 {imagePreview ? (
                   <>
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-40 object-cover rounded"
-                    />
+                    <div className="relative h-40 w-full">
+                      <Image
+                        src={imagePreview}
+                        alt="Preview"
+                        fill
+                        unoptimized
+                        className="object-cover rounded"
+                        sizes="100vw"
+                      />
+                    </div>
                     <button
                       type="button"
                       className="absolute top-2 right-2 bg-black text-white rounded-full p-1"

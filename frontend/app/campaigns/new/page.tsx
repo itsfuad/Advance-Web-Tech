@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { TriangleAlert, Upload, X, Loader2 } from "lucide-react";
+import { getApiErrorMessage } from "@/lib/utils";
 
 const CATEGORIES = [
   "Technology",
@@ -49,7 +51,7 @@ export default function NewCampaignPage() {
       return;
     }
     if (!emailVerified) {
-      router.replace("/profile");
+      router.replace(`/profile/${user?.id ?? ""}`);
     }
   }, [emailVerified, isLoading, router, user]);
 
@@ -92,8 +94,8 @@ export default function NewCampaignPage() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       router.push(`/campaigns/${res.data.id}`);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to create campaign");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Failed to create campaign"));
     } finally {
       setLoading(false);
     }
@@ -116,7 +118,7 @@ export default function NewCampaignPage() {
                 Verify your email to unlock campaign creation.
               </p>
             </div>
-            <Link href="/profile">
+            <Link href={`/profile/${user?.id ?? ""}`}>
               <Button
                 variant="outline"
                 size="sm"
@@ -150,11 +152,16 @@ export default function NewCampaignPage() {
                   </div>
                 ) : imagePreview ? (
                   <>
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-40 object-cover rounded"
-                    />
+                    <div className="relative h-40 w-full">
+                      <Image
+                        src={imagePreview}
+                        alt="Preview"
+                        fill
+                        unoptimized
+                        className="object-cover rounded"
+                        sizes="100vw"
+                      />
+                    </div>
                     <button
                       type="button"
                       className="absolute top-2 right-2 bg-black text-white rounded-full p-1"

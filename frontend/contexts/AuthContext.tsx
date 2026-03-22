@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -23,7 +24,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 const AUTH_PAGES = ["/login", "/register"];
-const PROTECTED_PAGES = ["/dashboard", "/profile", "/campaigns/new", "/admin"];
+const PROTECTED_PAGES = ["/dashboard", "/campaigns/new", "/admin"];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,

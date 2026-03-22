@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Campaign } from "@/types";
 import {
   formatCurrency,
@@ -7,7 +8,6 @@ import {
   resolveImageUrl,
 } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { Calendar, Target } from "lucide-react";
 
 interface CampaignCardProps {
@@ -24,12 +24,14 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
     <Link href={`/campaigns/${campaign.id}`}>
       <div className="group bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
         {/* Cover Image */}
-        <div className="h-48 bg-neutral-100 overflow-hidden">
+        <div className="relative h-48 bg-neutral-100 overflow-hidden">
           {campaign.coverImage ? (
-            <img
+            <Image
               src={resolveImageUrl(campaign.coverImage)}
               alt={campaign.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">

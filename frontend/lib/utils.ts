@@ -38,5 +38,16 @@ export function resolveImageUrl(src?: string | null): string {
   ) {
     return src;
   }
-  return src.startsWith("/") ? `${API_BASE}${src}` : `${API_BASE}/${src}`;
+  return src.startsWith("/") ? src : `${API_BASE}/${src}`;
+}
+
+export function getApiErrorMessage(err: unknown, fallback: string): string {
+  if (typeof err === "object" && err !== null && "response" in err) {
+    const response = (err as { response?: { data?: { message?: string } } })
+      .response;
+    if (response?.data?.message) {
+      return response.data.message;
+    }
+  }
+  return fallback;
 }

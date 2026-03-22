@@ -21,6 +21,7 @@ import {
 } from './auth.dto';
 
 const EMAIL_VERIFICATION_WINDOW_MS = 10 * 60 * 1000;
+const OTP_EXPIRE_TIME = 10 * 60 * 1000;
 
 @Injectable()
 export class AuthService {
@@ -97,25 +98,61 @@ export class AuthService {
     return this.generateToken(user);
   }
 
+  async resendEmailVerification(userId: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.emailVerified) {
+      throw new BadRequestException('Email already verified');
+    }
+
+    const emailVerificationToken = randomBytes(32).toString('hex');
+    const emailVerificationExpiresAt = new Date(
+      Date.now() + EMAIL_VERIFICATION_WINDOW_MS,
+    );
+
+    user.otpCode = null;
+    user.otpExpiry = null;
+    user.otpCode = emailVerificationToken;
+    user.otpExpiry = emailVerificationExpiresAt;
+    await this.userRepository.save(user);
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const verificationLink = `${frontendUrl}/verify-email?token=${emailVerificationToken}&email=${encodeURIComponent(user.email)}`;
+
+    this.emailService
+      .sendEmailVerificationEmail(user.email, user.name, verificationLink)
+      .catch(() => {});
+
+    return { message: 'Verification email sent' };
+  }
+
   async forgotPassword(dto: ForgotPasswordDto) {
     const user = await this.userRepository.findOne({
       where: { email: dto.email },
     });
     if (!user) {
-      return { message: 'If this email exists, an OTP has been sent' };
+      throw new BadRequestException('Account not found');
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = new Date(Date.now() + 10 * 60 * 1000);
+    const expiry = new Date(Date.now() + OTP_EXPIRE_TIME);
 
-    await this.userRepository.update(user.id, {
-      otpCode: otp,
-      otpExpiry: expiry,
-    });
+    user.otpCode = null;
+    user.otpExpiry = null;
+    user.otpCode = otp;
+    user.otpExpiry = expiry;
+    await this.userRepository.save(user);
 
-    await this.emailService.sendOtpEmail(user.email, otp, user.name);
+    await this.emailService.sendOtpEmail(
+      user.email,
+      otp,
+      user.name,
+      Math.round(OTP_EXPIRE_TIME / 60000),
+    );
 
-    return { message: 'If this email exists, an OTP has been sent' };
+    return { message: 'OTP has been sent to your email' };
   }
 
   async resetPassword(dto: ResetPasswordDto) {

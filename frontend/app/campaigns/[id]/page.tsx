@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import api from "@/lib/api";
 import { Campaign, Donation } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -25,11 +26,11 @@ import {
   formatCurrency,
   formatDate,
   getProgressPercentage,
+  getApiErrorMessage,
   resolveImageUrl,
 } from "@/lib/utils";
 import {
   Loader2,
-  Target,
   Calendar as CalendarIcon,
   Flag,
   Edit,
@@ -98,7 +99,7 @@ export default function CampaignDetailPage() {
 
     if (!emailVerified) {
       setDonateError("Please verify your email before donating.");
-      router.push("/profile");
+      router.push(`/profile/${user?.id ?? ""}`);
       return;
     }
 
@@ -120,8 +121,8 @@ export default function CampaignDetailPage() {
       // Refresh donations
       const dRes = await api.get(`/donations/campaign/${id}`);
       setDonations(dRes.data.data);
-    } catch (err: any) {
-      setDonateError(err.response?.data?.message || "Donation failed");
+    } catch (err: unknown) {
+      setDonateError(getApiErrorMessage(err, "Donation failed"));
     } finally {
       setDonating(false);
     }
@@ -134,8 +135,8 @@ export default function CampaignDetailPage() {
       await api.post(`/campaigns/${id}/report`, { reason: reportReason });
       setShowReportModal(false);
       alert("Campaign reported successfully");
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to report campaign");
+    } catch (err: unknown) {
+      alert(getApiErrorMessage(err, "Failed to report campaign"));
     } finally {
       setReportLoading(false);
     }
@@ -145,8 +146,8 @@ export default function CampaignDetailPage() {
     try {
       await api.delete(`/campaigns/${id}`);
       router.push("/dashboard");
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to delete campaign");
+    } catch (err: unknown) {
+      alert(getApiErrorMessage(err, "Failed to delete campaign"));
     }
   };
 
@@ -176,11 +177,13 @@ export default function CampaignDetailPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Cover Image */}
       {campaign.coverImage && (
-        <div className="h-72 md:h-96 rounded-xl overflow-hidden mb-8">
-          <img
+        <div className="relative h-72 md:h-96 rounded-xl overflow-hidden mb-8">
+          <Image
             src={resolveImageUrl(campaign.coverImage)}
             alt={campaign.title}
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
         </div>
       )}
@@ -200,7 +203,7 @@ export default function CampaignDetailPage() {
                 by{" "}
                 {campaign.creatorId ? (
                   <Link
-                    href={`/users/${campaign.creatorId}`}
+                    href={`/profile/${campaign.creatorId}`}
                     className="hover:text-neutral-900 hover:underline"
                   >
                     {campaign.creator?.name || "Unknown"}
@@ -322,7 +325,7 @@ export default function CampaignDetailPage() {
               )}
 
               {user && !emailVerified && (
-                <Link href="/profile">
+                <Link href={`/profile/${user?.id ?? ""}`}>
                   <Button variant="outline" className="w-full">
                     <TriangleAlert size={16} className="mr-2" />
                     Verify email to donate

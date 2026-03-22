@@ -7,7 +7,7 @@ import CampaignCard from "@/components/campaign/CampaignCard";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 
 const CATEGORIES = [
   "Technology",

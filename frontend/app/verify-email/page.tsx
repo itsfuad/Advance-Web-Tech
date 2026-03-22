@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import Link from "next/link";
@@ -5,12 +6,15 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 import api from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user, updateUser } = useAuth();
 
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading",
@@ -36,13 +40,27 @@ function VerifyEmailContent() {
 
         setStatus("success");
         setMessage(res.data?.message || "Email verified successfully.");
-      } catch (err: any) {
+        const verifiedUser = res.data?.user;
+        if (verifiedUser && user && verifiedUser.email === user.email) {
+          updateUser({ ...user, ...verifiedUser });
+        }
+        if (user) {
+          try {
+            const profileRes = await api.get("/auth/profile");
+            updateUser({ ...user, ...profileRes.data });
+          } catch {
+            // ignore refresh errors
+          }
+        }
+      } catch (err: unknown) {
         if (cancelled) return;
 
         setStatus("error");
         setMessage(
-          err.response?.data?.message ||
+          getApiErrorMessage(
+            err,
             "Verification failed. The link may be expired.",
+          ),
         );
       }
     };
