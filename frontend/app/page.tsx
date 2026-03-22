@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Target, TrendingUp, Users } from "lucide-react";
 import CampaignCard from "@/components/campaign/CampaignCard";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="bg-black text-white py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
+          <Image src="/icon.png" alt="Fundrise" width={96} height={96} className="mx-auto mb-6" />
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
             Fund What
             <br />
