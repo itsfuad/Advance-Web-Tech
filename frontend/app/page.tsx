@@ -1,13 +1,19 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Target, Users, TrendingUp } from 'lucide-react';
-import CampaignCard from '@/components/campaign/CampaignCard';
-import { Campaign } from '@/types';
+import Link from "next/link";
+import { ArrowRight, Target, TrendingUp, Users } from "lucide-react";
+import CampaignCard from "@/components/campaign/CampaignCard";
+import { Button } from "@/components/ui/button";
+import { Campaign } from "@/types";
+import HomeCta from "@/components/home/HomeCta";
 
 async function getFeaturedCampaigns(): Promise<Campaign[]> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/campaigns?limit=6`, { next: { revalidate: 60 } });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/campaigns?limit=6`,
+      { next: { revalidate: 60 } },
+    );
+
     if (!res.ok) return [];
+
     const data = await res.json();
     return data.data || [];
   } catch {
@@ -29,20 +35,10 @@ export default async function HomePage() {
             <span className="text-neutral-400">Matters.</span>
           </h1>
           <p className="text-lg md:text-xl text-neutral-400 mb-10 max-w-2xl mx-auto">
-            Create campaigns, support causes, and build a community around the things you care about most.
+            Create campaigns, support causes, and build a community around the
+            things you care about most.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <Button size="lg" className="bg-white text-black hover:bg-neutral-200 w-full sm:w-auto">
-                Start a Campaign <ArrowRight size={16} className="ml-2 inline" />
-              </Button>
-            </Link>
-            <Link href="/campaigns">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-black w-full sm:w-auto">
-                Browse Campaigns
-              </Button>
-            </Link>
-          </div>
+          <HomeCta />
         </div>
       </section>
 
@@ -101,13 +97,10 @@ export default async function HomePage() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to make an impact?</h2>
           <p className="text-neutral-500 mb-8">
-            Join thousands of creators and backers who are changing the world through community funding.
+            Join thousands of creators and backers who are changing the world
+            through community funding.
           </p>
-          <Link href="/register">
-            <Button size="lg">
-              Create Your Campaign <ArrowRight size={16} className="ml-2 inline" />
-            </Button>
-          </Link>
+          <HomeCta />
         </div>
       </section>
     </div>

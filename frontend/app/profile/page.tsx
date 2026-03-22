@@ -43,8 +43,12 @@ export default function ProfilePage() {
   const [pwError, setPwError] = useState("");
 
   useEffect(() => {
-    if (!isLoading && !user) router.push("/login");
-    if (user) setName(user.name);
+    if (isLoading) return;
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+    setName(user.name);
   }, [user, isLoading, router]);
 
   const handleProfileSave = async (e: React.FormEvent) => {

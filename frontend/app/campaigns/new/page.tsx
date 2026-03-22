@@ -1,31 +1,51 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import api from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Upload, X } from 'lucide-react';
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import api from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Upload, X } from "lucide-react";
 
-const CATEGORIES = ['Technology', 'Health', 'Education', 'Environment', 'Arts', 'Community', 'Business', 'Other'];
+const CATEGORIES = [
+  "Technology",
+  "Health",
+  "Education",
+  "Environment",
+  "Arts",
+  "Community",
+  "Business",
+  "Other",
+];
 
 export default function NewCampaignPage() {
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
-    title: '',
-    description: '',
-    goalAmount: '',
-    deadline: '',
-    category: '',
+    title: "",
+    description: "",
+    goalAmount: "",
+    deadline: "",
+    category: "",
   });
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!user) {
+      router.replace("/login");
+    }
+  }, [isLoading, router, user]);
+
+  if (isLoading || !user) return null;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,25 +59,25 @@ export default function NewCampaignPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     const formData = new FormData();
-    formData.append('title', form.title);
-    formData.append('description', form.description);
-    formData.append('goalAmount', form.goalAmount);
-    if (form.deadline) formData.append('deadline', form.deadline);
-    if (form.category) formData.append('category', form.category);
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("goalAmount", form.goalAmount);
+    if (form.deadline) formData.append("deadline", form.deadline);
+    if (form.category) formData.append("category", form.category);
     if (fileRef.current?.files?.[0]) {
-      formData.append('coverImage', fileRef.current.files[0]);
+      formData.append("coverImage", fileRef.current.files[0]);
     }
 
     try {
-      const res = await api.post('/campaigns', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const res = await api.post("/campaigns", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
       router.push(`/campaigns/${res.data.id}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create campaign');
+      setError(err.response?.data?.message || "Failed to create campaign");
     } finally {
       setLoading(false);
     }
@@ -88,20 +108,35 @@ export default function NewCampaignPage() {
               >
                 {imagePreview ? (
                   <>
-                    <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover rounded" />
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-40 object-cover rounded"
+                    />
                     <button
                       type="button"
                       className="absolute top-2 right-2 bg-black text-white rounded-full p-1"
-                      onClick={(e) => { e.stopPropagation(); setImagePreview(null); if (fileRef.current) fileRef.current.value = ''; }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setImagePreview(null);
+                        if (fileRef.current) fileRef.current.value = "";
+                      }}
                     >
                       <X size={12} />
                     </button>
                   </>
                 ) : (
                   <>
-                    <Upload size={24} className="mx-auto text-neutral-400 mb-2" />
-                    <p className="text-sm text-neutral-500">Click to upload cover image</p>
-                    <p className="text-xs text-neutral-400 mt-1">PNG, JPG up to 10MB</p>
+                    <Upload
+                      size={24}
+                      className="mx-auto text-neutral-400 mb-2"
+                    />
+                    <p className="text-sm text-neutral-500">
+                      Click to upload cover image
+                    </p>
+                    <p className="text-xs text-neutral-400 mt-1">
+                      PNG, JPG up to 10MB
+                    </p>
                   </>
                 )}
               </div>
@@ -120,7 +155,9 @@ export default function NewCampaignPage() {
                 id="title"
                 placeholder="Give your campaign a clear title"
                 value={form.title}
-                onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, title: e.target.value }))
+                }
                 required
               />
             </div>
@@ -131,7 +168,9 @@ export default function NewCampaignPage() {
                 id="description"
                 placeholder="Tell your story — what are you raising funds for?"
                 value={form.description}
-                onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
                 required
                 className="min-h-[150px]"
               />
@@ -146,7 +185,9 @@ export default function NewCampaignPage() {
                   min="1"
                   placeholder="1000"
                   value={form.goalAmount}
-                  onChange={(e) => setForm(f => ({ ...f, goalAmount: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, goalAmount: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -156,9 +197,11 @@ export default function NewCampaignPage() {
                 <Input
                   id="deadline"
                   type="date"
-                  min={new Date().toISOString().split('T')[0]}
+                  min={new Date().toISOString().split("T")[0]}
                   value={form.deadline}
-                  onChange={(e) => setForm(f => ({ ...f, deadline: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, deadline: e.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -168,17 +211,25 @@ export default function NewCampaignPage() {
               <Select
                 id="category"
                 value={form.category}
-                onChange={(e) => setForm(f => ({ ...f, category: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, category: e.target.value }))
+                }
                 placeholder="Select a category"
               >
                 {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </Select>
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+              >
                 Cancel
               </Button>
               <Button type="submit" loading={loading} className="flex-1">
