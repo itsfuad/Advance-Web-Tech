@@ -56,7 +56,7 @@ export default function Navbar() {
   const emailVerified = Boolean(user?.emailVerified || user?.emailVerifiedAt);
 
   return (
-    <nav className="sticky top-0 z-40 bg-[var(--background)]/80 border-b border-[var(--border)] backdrop-blur-md">
+    <nav className="sticky top-0 z-40 bg-(--background)/80 border-b border-(--border) backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-3">
@@ -65,9 +65,9 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8 font-medium tracking-tight">
-            <Link href="/campaigns" className="text-[var(--primary)] font-bold border-b-2 border-[var(--primary)] pb-1">Discover</Link>
-            <Link href="/how-it-works" className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">How it Works</Link>
-            <Link href="/categories" className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Categories</Link>
+            <Link href="/campaigns" className="text-(--primary) font-bold border-b-2 border-(--primary) pb-1">Discover</Link>
+            <Link href="/how-it-works" className="text-(--muted-foreground) hover:text-(--primary) transition-colors">How it Works</Link>
+            <Link href="/categories" className="text-(--muted-foreground) hover:text-(--primary) transition-colors">Categories</Link>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -76,7 +76,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setAccountOpen((open) => !open)}
-                  className={`inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-2 bg-transparent shadow-none transition-colors hover:bg-[var(--secondary-hover)] ${
+                  className={`inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-2 bg-transparent shadow-none transition-colors hover:bg-(--secondary-hover) ${
                     emailVerified
                       ? "border-sky-200 text-sky-700"
                       : "border-amber-200 text-amber-700"
@@ -105,7 +105,7 @@ export default function Navbar() {
                       className={`border-b px-4 py-4 ${emailVerified ? "border-sky-200" : "border-amber-200"}`}
                     >
                       <p className="text-sm font-semibold">{user.name}</p>
-                      <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                      <p className="mt-1 text-xs text-(--muted-foreground)">
                         {user.email}
                       </p>
                       {!emailVerified ? (

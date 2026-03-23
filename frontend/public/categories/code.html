@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Categories | The Philanthropist</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed-variant": "#6c3832",
+              "on-secondary": "#ffffff",
+              "inverse-surface": "#2e312f",
+              "surface-variant": "#e1e3e0",
+              "on-primary-fixed": "#002117",
+              "on-surface": "#191c1b",
+              "surface-container-highest": "#e1e3e0",
+              "tertiary-container": "#68342f",
+              "on-error": "#ffffff",
+              "outline": "#707974",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed": "#370e0b",
+              "on-primary-fixed-variant": "#15503e",
+              "primary-container": "#0f4c3a",
+              "surface-bright": "#f8faf6",
+              "on-surface-variant": "#404944",
+              "primary": "#003426",
+              "on-secondary-fixed-variant": "#364b46",
+              "secondary": "#4d635d",
+              "on-primary-container": "#82bba4",
+              "inverse-primary": "#99d3ba",
+              "on-error-container": "#93000a",
+              "surface-tint": "#306855",
+              "on-secondary-container": "#536963",
+              "inverse-on-surface": "#f0f1ee",
+              "tertiary-fixed-dim": "#ffb4ab",
+              "surface-container-low": "#f2f4f1",
+              "on-secondary-fixed": "#0a1f1b",
+              "error": "#ba1a1a",
+              "primary-fixed-dim": "#99d3ba",
+              "on-tertiary-container": "#e69e96",
+              "on-tertiary": "#ffffff",
+              "surface-dim": "#d9dad7",
+              "tertiary": "#4d1f1b",
+              "secondary-container": "#d0e8e1",
+              "error-container": "#ffdad6",
+              "surface-container": "#edeeeb",
+              "surface-container-high": "#e7e9e5",
+              "primary-fixed": "#b4efd6",
+              "secondary-fixed": "#d0e8e1",
+              "tertiary-fixed": "#ffdad6",
+              "outline-variant": "#bfc9c3",
+              "on-primary": "#ffffff",
+              "secondary-fixed-dim": "#b4cbc5",
+              "surface": "#f8faf6",
+              "on-background": "#191c1b",
+              "background": "#f8faf6"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+      .editorial-shadow {
+        box-shadow: 0 12px 40px rgba(25, 28, 27, 0.06);
+      }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#f8faf6]/80 backdrop-blur-md">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-[#003426]">The Philanthropist</div>
+<nav class="hidden md:flex items-center space-x-8 font-manrope font-medium tracking-tight">
+<a class="text-[#404944] hover:text-[#003426] transition-colors" href="#">Discover</a>
+<a class="text-[#404944] hover:text-[#003426] transition-colors" href="#">How it Works</a>
+<a class="text-[#003426] font-bold border-b-2 border-[#003426] pb-1" href="#">Categories</a>
+</nav>
+<div class="flex items-center space-x-4">
+<button class="px-5 py-2 text-sm font-semibold text-[#003426] hover:bg-[#f2f4f1] rounded-md transition-all Active:scale-95 duration-150 ease-in-out">Login</button>
+<button class="px-5 py-2 text-sm font-semibold bg-primary text-on-primary rounded-md transition-all Active:scale-95 duration-150 ease-in-out">Start a Campaign</button>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-24 px-8 max-w-screen-2xl mx-auto">
+<!-- Editorial Header Section -->
+<section class="mb-20 grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
+<div class="md:col-span-7">
+<p class="font-label text-sm uppercase tracking-widest text-on-surface-variant mb-4">Curated Impact</p>
+<h1 class="text-6xl md:text-7xl font-headline font-extrabold tracking-tighter leading-tight text-primary">
+                    Where will your <br/> legacy begin?
+                </h1>
+</div>
+<div class="md:col-span-5 pb-2">
+<p class="text-xl text-on-surface-variant font-light leading-relaxed max-w-md">
+                    Explore focused initiatives designed to address the most pressing challenges of our era. Every category is a doorway to meaningful change.
+                </p>
+</div>
+</section>
+<!-- Category Grid: Bento-style Asymmetry -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[280px]">
+<!-- Category Card: Environment (Large/Featured) -->
+<div class="md:col-span-8 md:row-span-2 group relative overflow-hidden bg-surface-container-low rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent z-10"></div>
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Lush green forest canopy with sunlight filtering through" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxB6m-0b7Kjzi3lfL5cCtNWGYPuwAAEhEzI1_8n65e1dfD1e6il-XWHBnRpco5q-VQDjjhDNcRUu3iJlAhPxUIlubtduNFOTX_QIWZdFA6I_s1hWWbX9CB78apWSuCkzz0ue_LF-SsRandrw9Qyt32Ya6K2M4nn3D4lom4gBK6voJKGx9tTjOBLsqA6-5m56TMDlf7EeNoifS9UDx00ZbEyinYQ3Xta5415S7SmEnGJyLYgyCvSpgtdRnTSPobBX3iEQMEJrTY-w7q"/>
+<div class="absolute bottom-0 left-0 p-10 z-20">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-on-primary text-3xl" data-icon="park">park</span>
+<span class="font-label text-xs uppercase tracking-[0.2em] text-on-primary/80">Active Projects: 142</span>
+</div>
+<h3 class="text-4xl font-headline font-bold text-on-primary mb-2">Environment</h3>
+<p class="text-on-primary/70 max-w-md font-light">Protecting biodiversity and restoring the natural equilibrium of our planet's most vital ecosystems.</p>
+</div>
+</div>
+<!-- Category Card: Education -->
+<div class="md:col-span-4 md:row-span-1 group relative overflow-hidden bg-surface-container-low rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-br from-surface-container-lowest/40 to-surface-container-low z-10"></div>
+<div class="relative z-20 p-8 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="auto_stories">auto_stories</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">84 Projects</span>
+</div>
+<div>
+<h3 class="text-2xl font-headline font-bold text-primary mb-1">Education</h3>
+<p class="text-sm text-on-surface-variant">Bridging the knowledge gap through accessible learning tools.</p>
+</div>
+</div>
+</div>
+<!-- Category Card: Community Health -->
+<div class="md:col-span-4 md:row-span-1 group relative overflow-hidden bg-surface-container-low rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-surface-container-high transition-colors group-hover:bg-primary z-10"></div>
+<div class="relative z-20 p-8 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary group-hover:text-on-primary text-4xl" data-icon="health_and_safety">health_and_safety</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant group-hover:text-on-primary/60 font-bold">67 Projects</span>
+</div>
+<div>
+<h3 class="text-2xl font-headline font-bold text-primary group-hover:text-on-primary mb-1">Community Health</h3>
+<p class="text-sm text-on-surface-variant group-hover:text-on-primary/70">Ensuring wellness for every neighborhood, regardless of scale.</p>
+</div>
+</div>
+</div>
+<!-- Category Card: Digital Literacy -->
+<div class="md:col-span-4 md:row-span-1 group relative overflow-hidden bg-surface-container-low rounded-xl cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity" data-alt="Modern clean circuit board pattern with blue highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuXdjI554dfuxu4ydvOZuOE4rsxQUVV-XorgdgEtmMbJ6OkEIm7upOScSZ2Gy7vR8ETx04mofAUDwUp96Fs4vWikaBc37ezWusKLcWan21FZ0aHVXaz_UsrNMoyyPi7aluU2ct2T_I3kk670FGctuQQ82D5vAltO__sIWqn5ZoDTFpWNnDQK4GN1j-3J5Vl8Q1Ghsvk-UTvL3pcNejEdn_iCnJ3MajOjSuMjrw0DXd6WokTuBBlj-b-BLcjZUsXUh95cARmaygR6Kh"/>
+<div class="relative z-20 p-8 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="terminal">terminal</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">39 Projects</span>
+</div>
+<div>
+<h3 class="text-2xl font-headline font-bold text-primary mb-1">Digital Literacy</h3>
+<p class="text-sm text-on-surface-variant">Empowering the next generation with future-ready technical skills.</p>
+</div>
+</div>
+</div>
+<!-- Category Card: Sustainable Arts -->
+<div class="md:col-span-8 md:row-span-1 group relative overflow-hidden bg-surface-container-low rounded-xl cursor-pointer">
+<div class="absolute inset-0 flex items-center justify-end px-12 opacity-10 group-hover:opacity-20 transition-all duration-500">
+<span class="material-symbols-outlined text-[160px] text-primary" data-icon="palette">palette</span>
+</div>
+<div class="relative z-20 p-8 flex flex-col h-full justify-center max-w-md">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-4">52 Projects</span>
+<h3 class="text-3xl font-headline font-bold text-primary mb-2">Sustainable Arts</h3>
+<p class="text-on-surface-variant">Fostering creative expression that preserves cultural heritage and ecological balance.</p>
+</div>
+</div>
+</div>
+<!-- Call to Action Section: Tonal Shift -->
+<section class="mt-24 p-16 bg-surface-container-low rounded-xl flex flex-col items-center text-center">
+<h2 class="text-4xl font-headline font-bold text-primary mb-6">Don't see your cause?</h2>
+<p class="text-on-surface-variant max-w-xl mb-10 text-lg">
+                The Philanthropist is constantly expanding. Start a conversation with us about emerging sectors or propose a new focus area for our community.
+            </p>
+<div class="flex gap-4">
+<button class="px-8 py-3 bg-primary text-on-primary font-semibold rounded-md hover:opacity-90 transition-opacity">Contact our Board</button>
+<button class="px-8 py-3 border border-outline/20 text-primary font-semibold rounded-md hover:bg-surface-container-high transition-colors">Submit a Proposal</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#bfc9c3]/15 bg-[#f2f4f1]">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 px-12 py-16 w-full max-w-screen-2xl mx-auto">
+<div class="space-y-4">
+<div class="text-lg font-bold text-[#003426]">The Philanthropist</div>
+<p class="text-[#404944] text-xs uppercase tracking-widest">Architects of impact.</p>
+</div>
+<div>
+<h4 class="font-manrope text-sm uppercase tracking-widest text-[#003426] font-bold mb-6">Platform</h4>
+<ul class="space-y-4 font-manrope text-sm uppercase tracking-widest text-[#404944]">
+<li><a class="hover:underline transition-all" href="#">About Us</a></li>
+<li><a class="hover:underline transition-all" href="#">Success Stories</a></li>
+<li><a class="hover:underline transition-all" href="#">Press Kit</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-manrope text-sm uppercase tracking-widest text-[#003426] font-bold mb-6">Support</h4>
+<ul class="space-y-4 font-manrope text-sm uppercase tracking-widest text-[#404944]">
+<li><a class="hover:underline transition-all" href="#">Contact Support</a></li>
+<li><a class="hover:underline transition-all" href="#">Terms of Service</a></li>
+<li><a class="hover:underline transition-all" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-manrope text-sm uppercase tracking-widest text-[#003426] font-bold mb-6">Newsletter</h4>
+<p class="text-[#404944] text-[10px] mb-4">WEEKLY INSIGHTS INTO GLOBAL CHANGE.</p>
+<div class="relative">
+<input class="w-full bg-transparent border-b border-outline/30 py-2 focus:outline-none focus:border-primary text-sm" placeholder="Email Address" type="email"/>
+<button class="absolute right-0 bottom-2 text-primary">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="px-12 py-8 border-t border-outline/10 text-center">
+<p class="font-manrope text-xs uppercase tracking-widest text-[#404944]">© 2024 The Digital Philanthropist. Built for Impact.</p>
+</div>
+</footer>
+</body></html>

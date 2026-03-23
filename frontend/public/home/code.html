@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#bfc9c3",
+              "secondary": "#4d635d",
+              "on-tertiary": "#ffffff",
+              "primary-fixed-dim": "#99d3ba",
+              "inverse-surface": "#2e312f",
+              "on-error": "#ffffff",
+              "on-secondary-container": "#536963",
+              "on-tertiary-fixed-variant": "#6c3832",
+              "primary-container": "#0f4c3a",
+              "surface-tint": "#306855",
+              "on-tertiary-fixed": "#370e0b",
+              "secondary-fixed": "#d0e8e1",
+              "error": "#ba1a1a",
+              "surface-dim": "#d9dad7",
+              "surface-container-low": "#f2f4f1",
+              "tertiary-container": "#68342f",
+              "on-surface-variant": "#404944",
+              "on-primary-container": "#82bba4",
+              "on-secondary-fixed-variant": "#364b46",
+              "tertiary": "#4d1f1b",
+              "surface-bright": "#f8faf6",
+              "on-secondary": "#ffffff",
+              "on-secondary-fixed": "#0a1f1b",
+              "primary-fixed": "#b4efd6",
+              "secondary-container": "#d0e8e1",
+              "inverse-on-surface": "#f0f1ee",
+              "on-background": "#191c1b",
+              "on-primary": "#ffffff",
+              "background": "#f8faf6",
+              "surface-container-high": "#e7e9e5",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#707974",
+              "on-error-container": "#93000a",
+              "secondary-fixed-dim": "#b4cbc5",
+              "tertiary-fixed-dim": "#ffb4ab",
+              "error-container": "#ffdad6",
+              "on-primary-fixed-variant": "#15503e",
+              "on-tertiary-container": "#e69e96",
+              "surface-container-highest": "#e1e3e0",
+              "surface": "#f8faf6",
+              "on-primary-fixed": "#002117",
+              "primary": "#003426",
+              "surface-container": "#edeeeb",
+              "inverse-primary": "#99d3ba",
+              "on-surface": "#191c1b",
+              "surface-variant": "#e1e3e0",
+              "tertiary-fixed": "#ffdad6"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#f8faf6]/80 dark:bg-[#191c1b]/80 backdrop-blur-md">
+<nav class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-[#003426] dark:text-[#f8faf6]">The Philanthropist</div>
+<div class="hidden md:flex items-center gap-8 font-manrope font-medium tracking-tight">
+<a class="text-[#003426] dark:text-[#f8faf6] font-bold border-b-2 border-[#003426] dark:border-[#f8faf6] pb-1" href="#">Discover</a>
+<a class="text-[#404944] dark:text-[#bfc9c3] hover:text-[#003426] dark:hover:text-[#f8faf6] transition-colors" href="#">How it Works</a>
+<a class="text-[#404944] dark:text-[#bfc9c3] hover:text-[#003426] dark:hover:text-[#f8faf6] transition-colors" href="#">Categories</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:block text-[#404944] px-4 py-2 hover:bg-[#f2f4f1] rounded-md transition-all active:scale-95 duration-150 ease-in-out">Login</button>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-bold transition-all active:scale-95 duration-150 ease-in-out">Start a Campaign</button>
+</div>
+</nav>
+</header>
+<main class="pt-20">
+<!-- Hero Section: Editorial & Asymmetric -->
+<section class="relative px-8 py-24 max-w-screen-2xl mx-auto overflow-hidden">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+<div class="md:col-span-6 z-10 relative">
+<span class="inline-block px-3 py-1 bg-secondary-container text-on-secondary-fixed-variant text-xs font-bold tracking-widest uppercase mb-6 rounded">Global Impact</span>
+<h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-primary mb-8">
+                        Empowering Change, <br/>
+<span class="text-outline-variant">One Project</span> <br/>
+                        at a Time
+                    </h1>
+<p class="text-xl text-on-surface-variant max-w-md mb-10 leading-relaxed">
+                        Join a global network of visionaries and supporters turning bold ideas into community-led realities.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-on-primary px-10 py-4 rounded-xl font-bold text-lg hover:shadow-xl transition-all">Start a Campaign</button>
+<button class="border border-outline-variant text-primary px-10 py-4 rounded-xl font-bold text-lg hover:bg-surface-container-low transition-all">Explore Projects</button>
+</div>
+</div>
+<div class="md:col-span-6 relative h-[600px] w-full">
+<div class="absolute inset-0 bg-primary-fixed rounded-[2rem] -rotate-3 translate-x-4 translate-y-4 opacity-20"></div>
+<img class="absolute inset-0 w-full h-full object-cover rounded-[2rem] shadow-2xl z-0" data-alt="Diverse community group working together on an urban garden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQIYi-OLHSU6unsDHHgQPGULg2qm6T8J8Bqdf2qCSdz9uB_5_Red0AtSLzY3jd4AKCS04RMnR_D5UFcKE2TJC2V2RJ-vTYCgY6JONY9WFuYQztV-f1KK1xBIJtCcGwN_4HOG3gQ0ynmouG0Jbp0w0BGwpRhA3hDkjLbfIhziJUrTLDeB7g4UXoi375d50PoMMdiobd8hUSChsbwJQJofBnMX_-P3KQEfPs5dUeMM7aqzjx6iMbOI87nmJIFaWEbgGFj3pMYIH_OyO_"/>
+<div class="absolute bottom-12 -left-12 bg-surface-container-lowest p-8 rounded-2xl shadow-xl max-w-xs hidden lg:block">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="volunteer_activism">volunteer_activism</span>
+</div>
+<div>
+<p class="text-sm font-bold text-primary">Live Campaign</p>
+<p class="text-xs text-on-surface-variant">Community Health Hub</p>
+</div>
+</div>
+<div class="h-2 w-full bg-primary-fixed rounded-full overflow-hidden mb-2">
+<div class="h-full bg-primary w-[82%]"></div>
+</div>
+<div class="flex justify-between text-xs font-bold">
+<span>82% Raised</span>
+<span class="text-primary">$41,000</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Impact Stats: Tonal Shift -->
+<section class="bg-surface-container-low py-20 px-8">
+<div class="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+<div>
+<p class="text-5xl font-extrabold text-primary tracking-tighter mb-2">$24.8M</p>
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Total Funds Raised</p>
+</div>
+<div>
+<p class="text-5xl font-extrabold text-primary tracking-tighter mb-2">1,240+</p>
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Successful Projects</p>
+</div>
+<div>
+<p class="text-5xl font-extrabold text-primary tracking-tighter mb-2">350k</p>
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Lives Impacted</p>
+</div>
+</div>
+</section>
+<!-- Featured Campaigns Grid -->
+<section class="py-32 px-8 max-w-screen-2xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+<div class="max-w-xl">
+<h2 class="text-4xl font-extrabold text-primary tracking-tight mb-4">Featured Impact Stories</h2>
+<p class="text-on-surface-variant leading-relaxed">Carefully curated campaigns that are making significant strides in social and environmental progress.</p>
+</div>
+<a class="text-primary font-bold flex items-center gap-2 group border-b border-primary pb-1" href="#">
+                    View All Campaigns <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+<!-- Card 1 -->
+<div class="group">
+<div class="relative overflow-hidden rounded-2xl aspect-[4/3] mb-6">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Close up of a solar panel installation on a rural school roof" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoW6aHs0B35VDip9cgLrWF6j4OTMAYG9EaEUm5e1zvk_BN5Awdzs0vqeYm7IxS_DLN3I5XVHQiKEiMSuu7bayA81IfZS6sVTyn7T36buVwB-zLmj3nyoRvSgaE72Jw-6hVqiac6sDb-PPbbZ3mO-T8g3jd4R5mi4pNIuaWscShg87C2lCuFlrRnscE_LD1Icxagx78U1tXYl1vPg9gjHwKyfX3JmNan-tMw10qaXWroPw54YYDiRyCt9q7xbWjaPeeaH_6G3BE8IaJ"/>
+<div class="absolute top-4 left-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-primary">Environment</div>
+</div>
+<div class="px-2">
+<h3 class="text-xl font-bold text-primary mb-1 group-hover:text-primary-container transition-colors">Solar Power for Rural Schools</h3>
+<p class="text-sm text-on-surface-variant mb-6">By GreenFuture Initiative</p>
+<div class="space-y-3">
+<div class="h-2.5 w-full bg-primary-fixed rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-surface-tint w-[65%]"></div>
+</div>
+<div class="flex justify-between items-baseline">
+<p class="text-sm text-on-surface"><span class="font-extrabold text-lg">$19,500</span> <span class="text-on-surface-variant">of $30,000</span></p>
+<p class="text-xs font-bold text-primary">65% funded</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group">
+<div class="relative overflow-hidden rounded-2xl aspect-[4/3] mb-6">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Hands holding fresh vegetables from a community urban garden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBdPYkXI3Ve6yJuVmLwCu5Wv3d4ZoKIWVtCyjOIPYE254ZOOKMf1Bq0S4EBD4K2EbP_HcE8-3qQDdhMHD5W-A_mjyef0x5kTwZaxcoIRpCZ5UPgLsMMPEIEsNwpSY0B0vwzHmbRgWEzXSYidpsSq7HBfn6mfQ4Aov39RC9F6sMSg95KP2V67vCPga9F_y6_fmukwmUh2Ri1guhLLr7cJzT-_7s8lIT4vhOLFDBzADB6e2ZhL2uduN7nFWcZMwi1ovtcdZ8ltJ9TtvJ"/>
+<div class="absolute top-4 left-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-primary">Community</div>
+</div>
+<div class="px-2">
+<h3 class="text-xl font-bold text-primary mb-1 group-hover:text-primary-container transition-colors">The Urban Oasis Garden Project</h3>
+<p class="text-sm text-on-surface-variant mb-6">By Helena Thorne</p>
+<div class="space-y-3">
+<div class="h-2.5 w-full bg-primary-fixed rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-surface-tint w-[88%]"></div>
+</div>
+<div class="flex justify-between items-baseline">
+<p class="text-sm text-on-surface"><span class="font-extrabold text-lg">$22,000</span> <span class="text-on-surface-variant">of $25,000</span></p>
+<p class="text-xs font-bold text-primary">88% funded</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group">
+<div class="relative overflow-hidden rounded-2xl aspect-[4/3] mb-6">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Children in a classroom using modern learning tablets" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2iI2vN5HRzT21Et3r93vhxBqk2pbMv3yr657Q1LrtHbSF4NNDpLRA8KsAR3lPrQm_rO0VtcpeQNmGI_77dtxPFQFmUyhsOMuHtbM5Gw7RJf7dIJ-tl5W4rqpm9PNm5jjph4ITW73l4Dn_-osOti5RiVanQlSx9ks8rMe602GMqkTKV6lTlTXKcsYtVrJ2yer2wWvFJ-BjbAoozXOrGyEx9Y7hnotbyHl6NZIdWYO1NjTEMkMbDmnlGWwyzIT6-UEcDNAtEv7r-nF6"/>
+<div class="absolute top-4 left-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-primary">Education</div>
+</div>
+<div class="px-2">
+<h3 class="text-xl font-bold text-primary mb-1 group-hover:text-primary-container transition-colors">Digital Literacy for All Children</h3>
+<p class="text-sm text-on-surface-variant mb-6">By TechEdu Foundation</p>
+<div class="space-y-3">
+<div class="h-2.5 w-full bg-primary-fixed rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-surface-tint w-[42%]"></div>
+</div>
+<div class="flex justify-between items-baseline">
+<p class="text-sm text-on-surface"><span class="font-extrabold text-lg">$16,800</span> <span class="text-on-surface-variant">of $40,000</span></p>
+<p class="text-xs font-bold text-primary">42% funded</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works: Minimal & Iconic -->
+<section class="bg-surface-container py-32 px-8">
+<div class="max-w-screen-2xl mx-auto">
+<div class="text-center mb-24">
+<h2 class="text-4xl font-extrabold text-primary mb-4 tracking-tight">Your Journey to Impact</h2>
+<p class="text-on-surface-variant max-w-lg mx-auto">Three simple steps to transform your vision into a community-supported success story.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+<div class="flex flex-col items-center text-center">
+<div class="w-24 h-24 bg-surface-container-lowest rounded-full flex items-center justify-center mb-8 shadow-sm">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<h3 class="text-2xl font-bold text-primary mb-4">Launch Your Idea</h3>
+<p class="text-on-surface-variant leading-relaxed">Share your story and vision with our intuitive campaign builder tools designed for storytelling.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-24 h-24 bg-surface-container-lowest rounded-full flex items-center justify-center mb-8 shadow-sm">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="groups">groups</span>
+</div>
+<h3 class="text-2xl font-bold text-primary mb-4">Build Your Community</h3>
+<p class="text-on-surface-variant leading-relaxed">Engage with supporters and build a movement around your cause with integrated social tools.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-24 h-24 bg-surface-container-lowest rounded-full flex items-center justify-center mb-8 shadow-sm">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="public">public</span>
+</div>
+<h3 class="text-2xl font-bold text-primary mb-4">Make an Impact</h3>
+<p class="text-on-surface-variant leading-relaxed">Collect funds, execute your project, and share the results with your community of backers.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter / CTA Section -->
+<section class="py-32 px-8">
+<div class="max-w-screen-2xl mx-auto bg-primary rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container to-transparent opacity-50"></div>
+<div class="relative z-10">
+<h2 class="text-4xl md:text-5xl font-extrabold text-on-primary mb-8 tracking-tighter">Ready to change the world?</h2>
+<p class="text-on-primary-container max-w-xl mx-auto mb-12 text-lg">Join 10,000+ philanthropists receiving weekly stories of impact and early access to breakthrough campaigns.</p>
+<div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+<input class="w-full md:w-96 px-6 py-4 rounded-xl border-none focus:ring-2 focus:ring-primary-fixed bg-surface-container-lowest text-on-surface" placeholder="Enter your email" type="email"/>
+<button class="w-full md:w-auto bg-primary-fixed text-on-primary-fixed px-10 py-4 rounded-xl font-bold hover:bg-primary-fixed-dim transition-all">Subscribe Now</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#bfc9c3]/15 bg-[#f2f4f1] dark:bg-[#191c1b]">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 px-12 py-16 w-full max-w-screen-2xl mx-auto">
+<div class="flex flex-col gap-4">
+<div class="text-lg font-bold text-[#003426] dark:text-[#f8faf6]">The Digital Philanthropist</div>
+<p class="text-[#404944] dark:text-[#bfc9c3] font-manrope text-sm normal-case tracking-normal">Making global change accessible through community-driven crowdfunding.</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="font-manrope text-sm uppercase tracking-widest text-[#003426] dark:text-[#f8faf6] font-bold">Platform</p>
+<div class="flex flex-col gap-2">
+<a class="text-[#404944] dark:text-[#bfc9c3] hover:underline transition-all" href="#">About Us</a>
+<a class="text-[#404944] dark:text-[#bfc9c3] hover:underline transition-all" href="#">Success Stories</a>
+<a class="text-[#404944] dark:text-[#bfc9c3] hover:underline transition-all" href="#">How it Works</a>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<p class="font-manrope text-sm uppercase tracking-widest text-[#003426] dark:text-[#f8faf6] font-bold">Legal</p>
+<div class="flex flex-col gap-2">
+<a class="text-[#404944] dark:text-[#bfc9c3] hover:underline transition-all" href="#">Privacy Policy</a>
+<a class="text-[#404944] dark:text-[#bfc9c3] hover:underline transition-all" href="#">Terms of Service</a>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<p class="font-manrope text-sm uppercase tracking-widest text-[#003426] dark:text-[#f8faf6] font-bold">Support</p>
+<div class="flex flex-col gap-2">
+<a class="text-[#404944] dark:text-[#bfc9c3] hover:underline transition-all" href="#">Contact Support</a>
+<a class="text-[#404944] dark:text-[#bfc9c3] hover:underline transition-all" href="#">Press Kit</a>
+</div>
+</div>
+</div>
+<div class="px-12 py-8 border-t border-outline-variant/10 text-center">
+<p class="font-manrope text-xs uppercase tracking-widest text-[#404944] dark:text-[#bfc9c3]">© 2024 The Digital Philanthropist. Built for Impact.</p>
+</div>
+</footer>
+</body></html>

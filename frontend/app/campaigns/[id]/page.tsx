@@ -30,7 +30,6 @@ import {
   resolveImageUrl,
 } from "@/lib/utils";
 import {
-  Loader2,
   Calendar as CalendarIcon,
   Flag,
   Edit,
@@ -62,11 +61,13 @@ export default function CampaignDetailPage() {
     expiryDate: "12/26",
     cvv: "123",
   });
+  type CARD_BRAND = "visa" | "mastercard" | "amex" | "discover" | "unknown" | null;
+  type CARD_STATUS = "valid" | "invalid" | "incomplete" | "unsupported";
   const [cardBrand, setCardBrand] = useState<
-    "visa" | "mastercard" | "amex" | "discover" | "unknown" | null
+    CARD_BRAND
   >("visa");
   const [cardStatus, setCardStatus] = useState<
-    "valid" | "invalid" | "incomplete" | "unsupported"
+    CARD_STATUS
   >("incomplete");
   const cardInputRef = useRef<HTMLInputElement>(null);
   const [cardCursor, setCardCursor] = useState<number | null>(null);
@@ -137,16 +138,16 @@ export default function CampaignDetailPage() {
   };
 
   const getCardMeta = (digits: string) => {
-    const brand = detectCardBrand(digits);
-    const status = validateCardNumber(digits, brand);
-    return { brand, status };
+    const brand = detectCardBrand(digits) as CARD_BRAND;
+    const status = validateCardNumber(digits, brand) as CARD_STATUS;
+    return { brand , status };
   };
 
   const normalizeCardInput = (raw: string) => {
     const digits = raw.replace(/\D/g, "");
-    const brand = detectCardBrand(digits);
+    const brand = detectCardBrand(digits) as CARD_BRAND;
     const formatted = formatCardNumber(digits, brand);
-    const status = validateCardNumber(digits, brand);
+    const status = validateCardNumber(digits, brand) as CARD_STATUS;
     return { brand, formatted, status };
   };
 
@@ -310,7 +311,7 @@ export default function CampaignDetailPage() {
     !isAdmin &&
     campaign.status === "active",
   );
-  const cardIsValid = cardStatus === "valid";
+
   const showCardStatus =
     donationForm.cardNumber.replace(/\D/g, "").length >= 12;
 
