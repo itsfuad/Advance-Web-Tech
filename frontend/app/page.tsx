@@ -4,6 +4,7 @@ import { ArrowRight, Target, TrendingUp, Users } from "lucide-react";
 import CampaignCard from "@/components/campaign/CampaignCard";
 import { Button } from "@/components/ui/button";
 import { Campaign } from "@/types";
+import { formatCurrency, getProgressPercentage, resolveImageUrl } from "@/lib/utils";
 import HomeCta from "@/components/home/HomeCta";
 import StatCounter from "@/components/home/StatCounter";
 
@@ -25,6 +26,8 @@ async function getFeaturedCampaigns(): Promise<Campaign[]> {
 
 export default async function HomePage() {
   const campaigns = await getFeaturedCampaigns();
+
+  const topCampaign = campaigns[0];
 
   return (
     <div suppressHydrationWarning>
@@ -62,22 +65,58 @@ export default async function HomePage() {
             <Image src="/cover.png" alt="Community" fill className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl z-0" />
 
             <div className="absolute bottom-12 -left-12 bg-(--surface-container-lowest) p-6 rounded-2xl shadow-xl max-w-xs hidden lg:block">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-(--primary) rounded-full flex items-center justify-center text-(--primary-foreground)">
-                  <Image alt="Icon" src="/icon.png" width={20} height={20}/>
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-(--primary)">Live Campaign</p>
-                  <p className="text-xs text-(--on-surface-variant)">Community Health Hub</p>
-                </div>
-              </div>
-              <div className="h-2 w-full bg-(--primary-fixed) rounded-full overflow-hidden mb-3">
-                <div className="h-full bg-(--primary) w-[82%]" />
-              </div>
-              <div className="flex justify-between text-xs font-bold">
-                <span>82% Raised</span>
-                <span className="text-(--primary)">$41,000</span>
-              </div>
+              {topCampaign ? (
+                <>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full overflow-hidden">
+                      {topCampaign.creator?.profileImage ? (
+                        <Image
+                          alt={topCampaign.creator.name || "Fundraiser"}
+                          src={resolveImageUrl(topCampaign.creator.profileImage)}
+                          width={48}
+                          height={48}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-(--primary) rounded-full flex items-center justify-center text-(--primary-foreground)">
+                          <Image alt="Icon" src="/icon.png" width={20} height={20}/>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-(--primary)">{topCampaign.status === "active" ? "Live Campaign" : topCampaign.status}</p>
+                      <p className="text-xs text-(--on-surface-variant) line-clamp-1">{topCampaign.title}</p>
+                    </div>
+                  </div>
+
+                  <div className="h-2 w-full bg-(--primary-fixed) rounded-full overflow-hidden mb-3">
+                    <div className="h-full bg-(--primary)" style={{ width: `${getProgressPercentage(topCampaign.raisedAmount, topCampaign.goalAmount)}%` }} />
+                  </div>
+                  <div className="flex justify-between text-xs font-bold">
+                    <span>{getProgressPercentage(topCampaign.raisedAmount, topCampaign.goalAmount)}% Raised</span>
+                    <span className="text-(--primary)">{formatCurrency(topCampaign.raisedAmount)}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-(--primary) rounded-full flex items-center justify-center text-(--primary-foreground)">
+                      <Image alt="Icon" src="/icon.png" width={20} height={20}/>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-(--primary)">Live Campaign</p>
+                      <p className="text-xs text-(--on-surface-variant)">Community Health Hub</p>
+                    </div>
+                  </div>
+                  <div className="h-2 w-full bg-(--primary-fixed) rounded-full overflow-hidden mb-3">
+                    <div className="h-full bg-(--primary) w-[82%]" />
+                  </div>
+                  <div className="flex justify-between text-xs font-bold">
+                    <span>82% Raised</span>
+                    <span className="text-(--primary)">$41,000</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
