@@ -22,20 +22,13 @@ export default function HomeCta() {
   return (
     <div className="flex flex-col sm:flex-row gap-4 justify-center">
       <Link href={primaryHref}>
-        <Button
-          size="lg"
-          className="bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)] w-full sm:w-auto"
-        >
+        <Button size="lg" className="w-full sm:w-auto">
           {primaryLabel} <ArrowRight size={16} className="ml-2 inline" />
         </Button>
       </Link>
 
       <Link href={secondaryHref}>
-        <Button
-          size="lg"
-          variant="outline"
-          className="border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:bg-[var(--secondary-hover)] hover:text-[var(--secondary-foreground)] w-full sm:w-auto"
-        >
+        <Button size="lg" variant="outline" className="w-full sm:w-auto">
           Browse Campaigns
         </Button>
       </Link>

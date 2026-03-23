@@ -1,36 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
-    --background: #ffffff;
-    --foreground: #111827;
+    --background: #f8faf6;
+    --surface: #f8faf6;
+    --surface-container-low: #f2f4f1;
+    --surface-container-lowest: #ffffff;
+    --surface-tint: #306855;
+    --foreground: #191c1b;
+    --on-surface-variant: #404944;
 
-    --primary: #60d666;
+    --primary: #003426;
     --primary-foreground: #ffffff;
-    --primary-hover: #44c75a;
+    --primary-hover: #0f4c3a;
+    --primary-fixed: #b4efd6;
+    --primary-fixed-dim: #99d3ba;
+    --primary-container: #0f4c3a;
 
-    --secondary: #ffffff;
-    --secondary-foreground: #111827;
-    --secondary-hover: #f3f4f6;
+    --secondary: #4d635d;
+    --secondary-foreground: #ffffff;
 
-    --muted: #f3f4f6;
-    --muted-foreground: #6b7280;
+    --muted: #e7e9e5;
+    --muted-foreground: #404944;
 
-    --border: #e5e7eb;
-    --destructive: #dc2626;
-    --destructive-hover: #b91c1c;
+    --border: #e1e3e0;
+    --outline: #bfc9c3;
+    --destructive: #ba1a1a;
 
-    --footer-background: #111111;
-    --footer-foreground: #ffffff;
-    --footer-muted-foreground: #9ca3af;
-    --footer-border: #27272a;
+    --footer-background: #f2f4f1;
+    --footer-foreground: #003426;
+    --footer-muted-foreground: #404944;
+    --footer-border: #bfc9c3;
+
+    --radius-sm: 0.125rem;
+    --radius-md: 0.25rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 1rem;
 }
 
 body {
     background: var(--background);
     color: var(--foreground);
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
         sans-serif;
+}
+
+::selection {
+    background: var(--primary-fixed);
+    color: var(--primary-foreground);
 }
 
 .line-clamp-2 {

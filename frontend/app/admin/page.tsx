@@ -357,7 +357,7 @@ export default function AdminPage() {
                     >
                       <Link
                         href={`/campaigns/${c.id}`}
-                        className="text-sm hover:underline truncate max-w-[200px]"
+                        className="text-sm hover:underline truncate max-w-50"
                       >
                         {c.title}
                       </Link>
@@ -525,7 +525,7 @@ export default function AdminPage() {
                               );
                             })}
                           </svg>
-                          <div className="mt-2 text-xs text-neutral-600 text-center max-w-[120px]">
+                          <div className="mt-2 text-xs text-neutral-600 text-center max-w-30">
                             {entries.slice(0, 3).map(([name, value]) => (
                               <div key={name} className="truncate">
                                 <span className="font-medium">{name}</span>: {formatCurrency(value)}

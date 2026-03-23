@@ -21,24 +21,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const base =
-      "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] disabled:pointer-events-none disabled:opacity-50 cursor-pointer";
+      "inline-flex items-center justify-center rounded-xl font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer shadow-sm";
 
     const variants = {
       default:
-        "bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)]",
+        "bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)] shadow-md hover:shadow-lg",
       outline:
-        "border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:bg-[var(--secondary-hover)]",
+        "border border-[var(--outline)] bg-[var(--surface)] text-[var(--primary)] hover:bg-[var(--surface-container-low)]",
       ghost:
-        "bg-transparent text-[var(--secondary-foreground)] hover:bg-[var(--secondary-hover)]",
+        "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--surface-container-low)]",
       destructive:
         "bg-[var(--destructive)] text-white hover:bg-[var(--destructive-hover)]",
-      link: "text-[var(--secondary-foreground)] underline-offset-4 hover:underline bg-transparent",
+      link: "text-[var(--primary)] underline-offset-4 hover:underline bg-transparent",
     };
 
     const sizes = {
-      sm: "h-8 px-3 text-xs",
+      sm: "h-9 px-3 text-xs",
       md: "h-10 px-4 py-2 text-sm",
-      lg: "h-12 px-6 text-base",
+      lg: "h-14 px-8 text-base",
       icon: "h-10 w-10",
     };
 

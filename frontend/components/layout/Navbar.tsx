@@ -56,7 +56,7 @@ export default function Navbar() {
   const emailVerified = Boolean(user?.emailVerified || user?.emailVerifiedAt);
 
   return (
-    <nav className="sticky top-0 z-40 bg-white border-b border-neutral-200">
+    <nav className="sticky top-0 z-40 bg-[var(--background)]/80 border-b border-[var(--border)] backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-3">
@@ -64,7 +64,11 @@ export default function Navbar() {
             <span className="text-xl font-bold tracking-tight">FUNDRISE</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-6" />
+          <div className="hidden md:flex items-center gap-8 font-medium tracking-tight">
+            <Link href="/campaigns" className="text-[var(--primary)] font-bold border-b-2 border-[var(--primary)] pb-1">Discover</Link>
+            <Link href="/how-it-works" className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">How it Works</Link>
+            <Link href="/categories" className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Categories</Link>
+          </div>
 
           <div className="hidden md:flex items-center gap-3">
             {user ? (

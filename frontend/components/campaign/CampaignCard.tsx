@@ -22,9 +22,9 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
 
   return (
     <Link href={`/campaigns/${campaign.id}`}>
-      <div className="group bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+      <div className="group bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
         {/* Cover Image */}
-        <div className="relative h-48 bg-neutral-100 overflow-hidden">
+        <div className="relative h-56 bg-[var(--surface-container-low)] overflow-hidden">
           {campaign.coverImage ? (
             <Image
               src={resolveImageUrl(campaign.coverImage)}

@@ -29,57 +29,54 @@ export default async function HomePage() {
   return (
     <div suppressHydrationWarning>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-emerald-600 to-sky-600 text-white">
-        <div className="absolute -left-20 -top-20 w-96 h-96 rounded-full bg-white/10 blur-3xl transform rotate-12 pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 py-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="flex items-center gap-4 mb-4">
-                <Image src="/icon.png" alt="Fundrise" width={56} height={56} className="rounded-full bg-white/10 p-2" />
-                <div>
-                  <h3 className="text-sm uppercase tracking-wider font-semibold">Fundrise</h3>
-                  <p className="text-xs text-white/80">Community-powered fundraising</p>
-                </div>
-              </div>
+      <section className="relative px-8 py-24 max-w-screen-2xl mx-auto overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+          <div className="md:col-span-6 z-10 relative">
+            <span className="inline-block px-3 py-1 bg-(--surface-container-low) text-(--on-surface-variant) text-xs font-bold tracking-widest uppercase mb-6 rounded">Global Impact</span>
 
-              <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
-                Fund what truly
-                <br />
-                <span className="text-white/95">matters — together.</span>
-              </h1>
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-[0.92] text-(--primary) mb-6">
+              Empowering Change,
+              <br />
+              <span className="text-(--outline)">One Project</span>
+              <br />
+              at a Time
+            </h1>
 
-              <p className="text-lg text-white/90 mb-6 max-w-xl">
-                Create campaigns, support causes, and build a community around the things you care about most.
-              </p>
+            <p className="text-xl text-(--on-surface-variant) max-w-md mb-8 leading-relaxed">
+              Join a global network of visionaries and supporters turning bold ideas into community-led realities.
+            </p>
 
-              <div className="flex items-center gap-3">
-                <Link href="/campaigns/new">
-                  <Button size="lg" className="bg-white text-emerald-600 hover:bg-white/90">Start a campaign</Button>
-                </Link>
-                <Link href="/campaigns">
-                  <Button variant="ghost" className="text-white/90 border-white/20">Browse campaigns <ArrowRight size={14} className="ml-2 inline" /></Button>
-                </Link>
-              </div>
-
-              <div className="mt-8 flex gap-8">
-                <div>
-                  <div className="text-2xl font-bold">100K+</div>
-                  <div className="text-sm text-white/80">Backers</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">50K+</div>
-                  <div className="text-sm text-white/80">Campaigns</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">$5M+</div>
-                  <div className="text-sm text-white/80">Total raised</div>
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/campaigns/new">
+                <Button size="lg" className="bg-(--primary) text-(--primary-foreground) px-8 py-4 rounded-xl font-bold">Start a Campaign</Button>
+              </Link>
+              <Link href="/campaigns">
+                <Button variant="outline" size="lg" className="text-(--primary) border-(--outline) px-8 py-4 rounded-xl font-bold">Explore Projects</Button>
+              </Link>
             </div>
+          </div>
 
-            <div className="relative flex justify-center">
-              <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 shadow-lg">
-                <Image src="/icon.png" alt="Plant" width={360} height={360} className="mx-auto" />
+          <div className="md:col-span-6 relative h-130 w-full">
+            <div className="absolute inset-0 bg-(--primary-fixed) rounded-2xl -rotate-3 translate-x-4 translate-y-4 opacity-20" />
+
+            <Image src="/cover.png" alt="Community" fill className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl z-0" />
+
+            <div className="absolute bottom-12 -left-12 bg-(--surface-container-lowest) p-6 rounded-2xl shadow-xl max-w-xs hidden lg:block">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-(--primary) rounded-full flex items-center justify-center text-(--primary-foreground)">
+                  <Image alt="Icon" src="/icon.png" width={20} height={20}/>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-(--primary)">Live Campaign</p>
+                  <p className="text-xs text-(--on-surface-variant)">Community Health Hub</p>
+                </div>
+              </div>
+              <div className="h-2 w-full bg-(--primary-fixed) rounded-full overflow-hidden mb-3">
+                <div className="h-full bg-(--primary) w-[82%]" />
+              </div>
+              <div className="flex justify-between text-xs font-bold">
+                <span>82% Raised</span>
+                <span className="text-(--primary)">$41,000</span>
               </div>
             </div>
           </div>

@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 type StatCounterProps = {
   target: number;
@@ -12,8 +13,8 @@ type StatCounterProps = {
 
 export default function StatCounter({
   target,
-  suffix = '',
-  prefix = '',
+  suffix = "",
+  prefix = "",
   durationMs = 1200,
   className,
 }: StatCounterProps) {
@@ -38,7 +39,7 @@ export default function StatCounter({
   }, [target, durationMs]);
 
   return (
-    <div className={className}>
+    <div className={cn("text-3xl md:text-5xl font-extrabold text-[var(--primary)]", className)}>
       {prefix}
       {value.toLocaleString()}
       {suffix}

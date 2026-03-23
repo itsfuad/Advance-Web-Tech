@@ -2,12 +2,12 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-black text-white py-12 mt-auto">
+    <footer className="bg-[var(--footer-background)] text-[var(--footer-foreground)] py-12 mt-auto border-t border-[var(--footer-border)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-lg font-bold tracking-tight mb-3">FUNDRISE</h3>
-            <p className="text-neutral-400 text-sm">
+            <p className="text-[var(--footer-muted-foreground)] text-sm">
               Empowering ideas through community funding. Start your campaign
               today.
             </p>
@@ -59,7 +59,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-neutral-800 mt-8 pt-8 text-center text-neutral-500 text-sm">
+        <div className="border-t border-[var(--footer-border)] mt-8 pt-8 text-center text-[var(--footer-muted-foreground)] text-sm">
           © {new Date().getFullYear()} FundRise. All rights reserved.
         </div>
       </div>
