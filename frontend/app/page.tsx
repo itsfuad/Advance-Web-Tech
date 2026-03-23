@@ -29,19 +29,60 @@ export default async function HomePage() {
   return (
     <div suppressHydrationWarning>
       {/* Hero */}
-      <section className="bg-black text-white py-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <Image src="/icon.png" alt="Fundrise" width={96} height={96} className="mx-auto mb-6" />
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            Fund What
-            <br />
-            <span className="text-neutral-400">Matters.</span>
-          </h1>
-          <p className="text-lg md:text-xl text-neutral-400 mb-10 max-w-2xl mx-auto">
-            Create campaigns, support causes, and build a community around the
-            things you care about most.
-          </p>
-          <HomeCta />
+      <section className="relative overflow-hidden bg-gradient-to-r from-emerald-600 to-sky-600 text-white">
+        <div className="absolute -left-20 -top-20 w-96 h-96 rounded-full bg-white/10 blur-3xl transform rotate-12 pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 py-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+              <div className="flex items-center gap-4 mb-4">
+                <Image src="/icon.png" alt="Fundrise" width={56} height={56} className="rounded-full bg-white/10 p-2" />
+                <div>
+                  <h3 className="text-sm uppercase tracking-wider font-semibold">Fundrise</h3>
+                  <p className="text-xs text-white/80">Community-powered fundraising</p>
+                </div>
+              </div>
+
+              <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
+                Fund what truly
+                <br />
+                <span className="text-white/95">matters — together.</span>
+              </h1>
+
+              <p className="text-lg text-white/90 mb-6 max-w-xl">
+                Create campaigns, support causes, and build a community around the things you care about most.
+              </p>
+
+              <div className="flex items-center gap-3">
+                <Link href="/campaigns/new">
+                  <Button size="lg" className="bg-white text-emerald-600 hover:bg-white/90">Start a campaign</Button>
+                </Link>
+                <Link href="/campaigns">
+                  <Button variant="ghost" className="text-white/90 border-white/20">Browse campaigns <ArrowRight size={14} className="ml-2 inline" /></Button>
+                </Link>
+              </div>
+
+              <div className="mt-8 flex gap-8">
+                <div>
+                  <div className="text-2xl font-bold">100K+</div>
+                  <div className="text-sm text-white/80">Backers</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">50K+</div>
+                  <div className="text-sm text-white/80">Campaigns</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">$5M+</div>
+                  <div className="text-sm text-white/80">Total raised</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative flex justify-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 shadow-lg">
+                <Image src="/icon.png" alt="Plant" width={360} height={360} className="mx-auto" />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
