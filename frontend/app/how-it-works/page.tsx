@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Target, Users } from "lucide-react";
 
 export default function HowItWorksPage() {
   return (
@@ -58,7 +59,7 @@ export default function HowItWorksPage() {
             <div className="space-y-6">
               <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl">
                 <div className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-(--primary) bg-(--primary-fixed) p-3 rounded-full">search_insights</span>
+                  <Target size={24} className="text-(--primary)" />
                   <div>
                     <h4 className="font-bold">Discovery & Diligence</h4>
                     <p className="text-sm text-(--on-surface-variant)">Curated, scored projects to make discovery efficient for serious backers.</p>
@@ -68,7 +69,7 @@ export default function HowItWorksPage() {
 
               <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl">
                 <div className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-(--primary) bg-(--primary-fixed) p-3 rounded-full">account_balance_wallet</span>
+                  <Users size={24} className="text-(--primary)" />
                   <div>
                     <h4 className="font-bold">Secure Allocation</h4>
                     <p className="text-sm text-(--on-surface-variant)">Payments held and released via milestone verification for maximum trust.</p>
@@ -111,7 +112,7 @@ export default function HowItWorksPage() {
           <div className="md:col-span-2 bg-(--surface-container-low) rounded-2xl p-8 flex flex-col justify-between">
             <div className="flex justify-between">
               <div className="w-12 h-12 bg-(--primary) text-(--primary-foreground) rounded-full flex items-center justify-center font-bold">1</div>
-              <span className="material-symbols-outlined text-(--outline)" style={{fontVariationSettings: "'FILL' 0"}}>monitoring</span>
+              <div className="text-(--outline)">monitoring</div>
             </div>
 
             <div>
@@ -147,7 +148,7 @@ export default function HowItWorksPage() {
         <h2 className="text-3xl font-bold mb-4">Ready to architect change?</h2>
         <div className="flex justify-center gap-4">
           <Link href="/campaigns/new"><Button>Start a Movement</Button></Link>
-          <Link href="/campaigns"><Button variant="outline">Browse Projects</Button></Link>
+          <Link href="/campaigns"><button className="px-6 py-3 border border-(--outline) text-(--primary) rounded-md">Browse Projects</button></Link>
         </div>
       </section>
     </main>
