@@ -14,7 +14,7 @@ import {
   TriangleAlert,
   X,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { resolveImageUrl } from "@/lib/utils";
 
 export default function Navbar() {
@@ -23,6 +23,7 @@ export default function Navbar() {
   const [accountOpen, setAccountOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = () => {
     logout();
@@ -65,9 +66,9 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8 font-medium tracking-tight">
-            <Link href="/campaigns" className="text-(--primary) font-bold border-b-2 border-(--primary) pb-1">Discover</Link>
-            <Link href="/how-it-works" className="text-(--muted-foreground) hover:text-(--primary) transition-colors">How it Works</Link>
-            <Link href="/categories" className="text-(--muted-foreground) hover:text-(--primary) transition-colors">Categories</Link>
+            <Link href="/campaigns" className={`${pathname?.startsWith("/campaigns") ? "text-(--primary) font-bold border-b-2 border-(--primary) pb-1" : "text-(--muted-foreground) hover:text-(--primary) transition-colors"}`}>Discover</Link>
+            <Link href="/how-it-works" className={`${pathname === "/how-it-works" ? "text-(--primary) font-bold border-b-2 border-(--primary) pb-1" : "text-(--muted-foreground) hover:text-(--primary) transition-colors"}`}>How it Works</Link>
+            <Link href="/categories" className={`${pathname?.startsWith("/categories") ? "text-(--primary) font-bold border-b-2 border-(--primary) pb-1" : "text-(--muted-foreground) hover:text-(--primary) transition-colors"}`}>Categories</Link>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -185,7 +186,7 @@ export default function Navbar() {
         <div className="md:hidden bg-(--secondary) border-t border-(--border) px-4 py-4 space-y-3">
           <Link
             href="/campaigns"
-            className="block text-sm py-2"
+            className={`block text-sm py-2 ${pathname?.startsWith("/campaigns") ? "underline font-medium" : ""}`}
             onClick={() => setMenuOpen(false)}
           >
             Browse Campaigns

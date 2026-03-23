@@ -9,16 +9,7 @@ import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
-const CATEGORIES = [
-  "Technology",
-  "Health",
-  "Education",
-  "Environment",
-  "Arts",
-  "Community",
-  "Business",
-  "Other",
-];
+import { CATEGORY_NAMES } from "@/lib/categories";
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -109,7 +100,7 @@ export default function CampaignsPage() {
           className="w-full sm:w-48"
           placeholder="All Categories"
         >
-          {CATEGORIES.map((c) => (
+          {CATEGORY_NAMES.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>

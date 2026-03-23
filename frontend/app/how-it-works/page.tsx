@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Target, Users } from "lucide-react";
+import { Target, Users, ChartLine } from "lucide-react";
 
 export default function HowItWorksPage() {
   return (
@@ -112,20 +112,21 @@ export default function HowItWorksPage() {
           <div className="md:col-span-2 bg-(--surface-container-low) rounded-2xl p-8 flex flex-col justify-between">
             <div className="flex justify-between">
               <div className="w-12 h-12 bg-(--primary) text-(--primary-foreground) rounded-full flex items-center justify-center font-bold">1</div>
-              <div className="text-(--outline)">monitoring</div>
+              <ChartLine size={20} />
             </div>
 
             <div>
-              <h3 className="text-2xl font-bold mt-6">Real-Time Verification</h3>
-              <p className="text-(--on-surface-variant)">Updates, audits and progress metrics available to all backers in a live feed.</p>
+                <h3 className="text-2xl font-bold mt-6">Real-Time Verification</h3>
+                <p className="text-(--on-surface-variant)">Updates, audits and progress metrics available to all backers in a live feed.</p>
             </div>
           </div>
 
-          <div className="bg-(--primary-container) text-(--primary-foreground) rounded-2xl p-8 flex flex-col justify-between">
-            <div className="w-10 h-10 bg-(--primary-fixed) rounded-full flex items-center justify-center font-bold">2</div>
+          <div className="relative bg-(--primary-container) text-(--primary-foreground) rounded-2xl p-8 flex flex-col justify-between">
+            <div className="w-10 h-10 bg-(--primary) rounded-full flex items-center justify-center font-bold">2</div>
+            <Users size={90} className="text-(--primary) absolute right-10" />
             <div>
               <h3 className="text-2xl font-bold mt-2">Community Governance</h3>
-              <p className="text-(--primary-fixed) text-sm">Voting and local participation in implementation decisions.</p>
+              <p className="text-(--secondary) text-sm">Voting and local participation in implementation decisions.</p>
             </div>
           </div>
 
@@ -148,7 +149,7 @@ export default function HowItWorksPage() {
         <h2 className="text-3xl font-bold mb-4">Ready to architect change?</h2>
         <div className="flex justify-center gap-4">
           <Link href="/campaigns/new"><Button>Start a Movement</Button></Link>
-          <Link href="/campaigns"><button className="px-6 py-3 border border-(--outline) text-(--primary) rounded-md">Browse Projects</button></Link>
+          <Link href="/campaigns"><Button variant="outline">Browse Projects</Button></Link>
         </div>
       </section>
     </main>

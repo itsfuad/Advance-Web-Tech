@@ -59,7 +59,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-(--footer-border) mt-8 pt-8 text-center text-(--footer-muted-foreground) text-sm">
+        <div className="border-t border-(--secondary) mt-8 pt-8 text-center text-(--secondary) text-sm">
           © {new Date().getFullYear()} FundRise. All rights reserved.
         </div>
       </div>

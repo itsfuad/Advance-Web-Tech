@@ -1,0 +1,58 @@
+export const CATEGORIES = [
+  {
+    id: "environment",
+    title: "Environment",
+    count: 142,
+    description: "Protecting biodiversity and restoring vital ecosystems with community-led solutions.",
+    emoji: "🌿",
+    iconName: "environment",
+    layout: "featured",
+  },
+  {
+    id: "education",
+    title: "Education",
+    count: 84,
+    description: "Bridging learning gaps with accessible tools and curricula.",
+    emoji: "📚",
+    iconName: "education",
+    layout: "normal",
+  },
+  {
+    id: "community-health",
+    title: "Community Health",
+    count: 67,
+    description: "Local initiatives improving health outcomes for neighborhoods.",
+    emoji: "⚕️",
+    iconName: "community-health",
+    layout: "normal",
+  },
+  {
+    id: "digital-literacy",
+    title: "Digital Literacy",
+    count: 39,
+    description: "Skills and training for the next generation of makers.",
+    emoji: "💻",
+    iconName: "digital-literacy",
+    layout: "normal",
+  },
+  {
+    id: "arts",
+    title: "Sustainable Arts",
+    count: 52,
+    description: "Creative projects that preserve culture and foreground sustainability.",
+    emoji: "🎨",
+    iconName: "arts",
+    layout: "wide",
+  },
+  {
+    id: "business",
+    title: "Business",
+    count: 28,
+    description: "Supporting local entrepreneurship and community-led enterprises.",
+    emoji: "💼",
+    iconName: "business",
+    layout: "normal",
+  },
+];
+
+export const CATEGORY_NAMES = CATEGORIES.map((c) => c.title);
