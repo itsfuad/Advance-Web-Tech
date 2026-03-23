@@ -149,7 +149,7 @@ export default function Navbar() {
                         setAccountOpen(false);
                         handleLogout();
                       }}
-                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-left transition-colors hover:bg-(--secondary-hover)"
+                      className="text-red-500 cursor-pointer flex w-full items-center gap-3 px-4 py-3 text-sm text-left transition-colors hover:bg-(--secondary-hover)"
                     >
                       <LogOut size={16} />
                       Logout
