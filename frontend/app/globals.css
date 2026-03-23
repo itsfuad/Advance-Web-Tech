@@ -4,6 +4,7 @@
 :root {
     --background: #f8faf6;
     --surface: #f8faf6;
+    --surface-container-high:  #bfc9c3;
     --surface-container-low: #f2f4f1;
     --surface-container-lowest: #ffffff;
     --surface-tint: #306855;

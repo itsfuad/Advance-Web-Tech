@@ -19,7 +19,7 @@ export default function HowItWorksPage() {
 
       {/* Phase One: Asymmetric */}
       <section className="mb-20 flex flex-col md:flex-row gap-12">
-        <aside className="md:w-5/12 sticky top-28">
+        <aside className="md:w-5/12 top-28">
           <div className="bg-[var(--surface-container-low)] p-10 rounded-2xl">
             <span className="uppercase text-xs tracking-widest text-[var(--primary)] font-bold">Phase One</span>
             <h2 className="text-3xl font-bold mt-4 mb-3">Start a Movement</h2>

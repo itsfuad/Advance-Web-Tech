@@ -37,15 +37,15 @@ export default async function HomePage() {
           <div className="md:col-span-6 z-10 relative">
             <span className="inline-block px-3 py-1 bg-(--surface-container-low) text-(--on-surface-variant) text-xs font-bold tracking-widest uppercase mb-6 rounded">Global Impact</span>
 
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-[0.92] text-(--primary) mb-6">
+            <h1 className="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-[var(--primary)] mb-8">
               Empowering Change,
               <br />
-              <span className="text-(--outline)">One Project</span>
+              <span className="text-[var(--outline)]">One Project</span>
               <br />
               at a Time
             </h1>
 
-            <p className="text-xl text-(--on-surface-variant) max-w-md mb-8 leading-relaxed">
+            <p className="text-xl text-[var(--on-surface-variant)] max-w-md mb-10 leading-relaxed">
               Join a global network of visionaries and supporters turning bold ideas into community-led realities.
             </p>
 
@@ -122,47 +122,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="py-16 border-b border-neutral-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div
-            suppressHydrationWarning
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
-          >
-            <div suppressHydrationWarning className="p-6">
-              <div className="flex justify-center mb-3">
-                <Target size={32} />
-              </div>
-              <StatCounter
-                className="text-3xl font-bold mb-1"
-                target={1000}
-                suffix="+"
-              />
-              <div className="text-neutral-500 text-sm">Campaigns Funded</div>
-            </div>
-            <div suppressHydrationWarning className="p-6">
-              <div className="flex justify-center mb-3">
-                <Users size={32} />
-              </div>
-              <StatCounter
-                className="text-3xl font-bold mb-1"
-                target={50000}
-                suffix="+"
-              />
-              <div className="text-neutral-500 text-sm">Community Members</div>
-            </div>
-            <div suppressHydrationWarning className="p-6">
-              <div className="flex justify-center mb-3">
-                <TrendingUp size={32} />
-              </div>
-              <StatCounter
-                className="text-3xl font-bold mb-1"
-                target={5}
-                prefix="$"
-                suffix="M+"
-              />
-              <div className="text-neutral-500 text-sm">Total Raised</div>
-            </div>
+      {/* Impact Stats: Tonal Shift */}
+      <section className="bg-[var(--surface-container-low)] py-20 px-8">
+        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+          <div>
+            <p className="text-5xl font-extrabold text-[var(--primary)] tracking-tighter mb-2">$24.8M</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Total Funds Raised</p>
+          </div>
+          <div>
+            <p className="text-5xl font-extrabold text-[var(--primary)] tracking-tighter mb-2">1,240+</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Successful Projects</p>
+          </div>
+          <div>
+            <p className="text-5xl font-extrabold text-[var(--primary)] tracking-tighter mb-2">350k</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Lives Impacted</p>
           </div>
         </div>
       </section>
@@ -228,15 +201,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section suppressHydrationWarning className="py-20 bg-neutral-50 px-4">
-        <div suppressHydrationWarning className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to make an impact?</h2>
-          <p className="text-neutral-500 mb-8">
-            Join thousands of creators and backers who are changing the world
-            through community funding.
-          </p>
-          <HomeCta />
+      {/* Newsletter / CTA Section */}
+      <section className="py-32 px-8">
+        <div className="max-w-screen-2xl mx-auto bg-[var(--primary)] rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary-container)] to-transparent opacity-50"></div>
+          <div className="relative z-10">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-[var(--on-primary)] mb-8 tracking-tighter">Ready to change the world?</h2>
+            <p className="text-[var(--on-primary-container)] max-w-xl mx-auto mb-12 text-lg">Join 10,000+ philanthropists receiving weekly stories of impact and early access to breakthrough campaigns.</p>
+            <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+              <input className="w-full md:w-96 px-6 py-4 rounded-xl border-none focus:ring-2 focus:ring-[var(--primary-fixed)] bg-[var(--surface-container-lowest)] text-[var(--on-surface)]" placeholder="Enter your email" type="email"/>
+              <button className="w-full md:w-auto bg-[var(--primary-fixed)] text-[var(--on-primary-fixed)] px-10 py-4 rounded-xl font-bold hover:bg-[var(--primary-fixed-dim)] transition-all">Subscribe Now</button>
+            </div>
+          </div>
         </div>
       </section>
     </div>
