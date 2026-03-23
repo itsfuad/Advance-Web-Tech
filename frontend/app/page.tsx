@@ -84,7 +84,7 @@ export default async function HomePage() {
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-(--primary)">{topCampaign.status === "active" ? "Live Campaign" : topCampaign.status}</p>
+                      <p className="text-sm font-bold text-(--primary)">{topCampaign.status === "active" ? "Top Campaign" : topCampaign.status}</p>
                       <p className="text-xs text-(--on-surface-variant) line-clamp-1">{topCampaign.title}</p>
                     </div>
                   </div>

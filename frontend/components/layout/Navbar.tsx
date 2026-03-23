@@ -93,14 +93,14 @@ export default function Navbar() {
                       className="h-8 w-8 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold text-[var(--foreground)]">
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold text-(--foreground)">
                       {user.name[0].toUpperCase()}
                     </div>
                   )}
                 </button>
 
                 {accountOpen && (
-                  <div className="absolute right-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--secondary)] text-[var(--foreground)] shadow-lg">
+                  <div className="absolute right-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-lg border border-(--border) bg-(--background) text-(--foreground) shadow-lg">
                     <div
                       className={`border-b px-4 py-4 ${emailVerified ? "border-sky-200" : "border-amber-200"}`}
                     >
