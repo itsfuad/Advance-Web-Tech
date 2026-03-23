@@ -160,7 +160,7 @@ export default function CampaignsPage() {
                     <Button
                       key={p}
                       variant={p === page ? "default" : "outline"}
-                      size="sm"
+                      size="md"
                       onClick={() => setPage(p)}
                     >
                       {p}

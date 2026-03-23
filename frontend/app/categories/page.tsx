@@ -64,8 +64,7 @@ export default function CategoriesPage() {
         <h2 className="text-2xl font-bold text-(--primary) mb-4">Don&apos;t see your cause?</h2>
         <p className="text-(--on-surface-variant) max-w-xl mx-auto mb-6">We welcome proposals for new sectors. Start a conversation with our team to seed a new focus area.</p>
         <div className="flex justify-center gap-4">
-          <Link href="/contact"><Button>Contact our Board</Button></Link>
-          <Link href="/proposal"><Button variant="outline">Submit a Proposal</Button></Link>
+          <Link href="mailto:me@itsfuad.com"><Button>Mail Us</Button></Link>
         </div>
       </section>
     </main>
