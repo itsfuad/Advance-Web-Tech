@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Target, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Target, TrendingUp, Users, Rocket, Globe } from "lucide-react";
 import CampaignCard from "@/components/campaign/CampaignCard";
 import { Button } from "@/components/ui/button";
 import { Campaign } from "@/types";
@@ -193,6 +193,40 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* How It Works: Journey to Impact */}
+      <section className="bg-[var(--surface-container)] py-24 px-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-3xl font-extrabold text-[var(--primary)] mb-4">Your Journey to Impact</h2>
+          <p className="text-[var(--on-surface-variant)] max-w-2xl mx-auto mb-12">Three simple steps to transform your vision into a community-supported success story.</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-24 h-24 bg-[var(--surface-container-lowest)] rounded-full flex items-center justify-center mb-6 shadow-sm">
+                <Rocket size={28} className="text-[var(--primary)]" />
+              </div>
+              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Launch Your Idea</h3>
+              <p className="text-[var(--on-surface-variant)] leading-relaxed">Share your story and vision with our intuitive campaign builder tools designed for storytelling.</p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="w-24 h-24 bg-[var(--surface-container-lowest)] rounded-full flex items-center justify-center mb-6 shadow-sm">
+                <Users size={28} className="text-[var(--primary)]" />
+              </div>
+              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Build Your Community</h3>
+              <p className="text-[var(--on-surface-variant)] leading-relaxed">Engage with supporters and build a movement around your cause with integrated social tools.</p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="w-24 h-24 bg-[var(--surface-container-lowest)] rounded-full flex items-center justify-center mb-6 shadow-sm">
+                <Globe size={28} className="text-[var(--primary)]" />
+              </div>
+              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Make an Impact</h3>
+              <p className="text-[var(--on-surface-variant)] leading-relaxed">Collect funds, execute your project, and share the results with your community of backers.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* CTA */}
       <section suppressHydrationWarning className="py-20 bg-neutral-50 px-4">
