@@ -39,7 +39,7 @@ export default function StatCounter({
   }, [target, durationMs]);
 
   return (
-    <div className={cn("text-3xl md:text-5xl font-extrabold text-[var(--primary)]", className)}>
+    <div className={cn("text-3xl md:text-5xl font-extrabold text-(--primary)", className)}>
       {prefix}
       {value.toLocaleString()}
       {suffix}

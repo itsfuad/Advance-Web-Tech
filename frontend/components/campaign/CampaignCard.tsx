@@ -22,9 +22,9 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
 
   return (
     <Link href={`/campaigns/${campaign.id}`}>
-      <div className="group bg-[var(--surface-container-high)] rounded-2xl overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
+      <div className="group bg-(--surface-container-low) rounded-2xl overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
         {/* Cover Image */}
-        <div className="relative h-56 bg-[var(--surface-container-lowest)] overflow-hidden">
+        <div className="relative h-56 bg-(--surface-container-lowest) overflow-hidden">
           {campaign.coverImage ? (
             <Image
               src={resolveImageUrl(campaign.coverImage)}
@@ -46,31 +46,31 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
               {campaign.category}
             </span>
           )}
-          <h3 className="text-xl font-bold text-[var(--primary)] mb-1 group-hover:text-[var(--primary-container)] transition-colors">
+          <h3 className="text-xl font-bold text-(--primary) mb-1 group-hover:text-(--primary-container) transition-colors">
             {campaign.title}
           </h3>
-          <p className="text-sm text-[var(--on-surface-variant)] mt-1 line-clamp-2">
+          <p className="text-sm text-(--on-surface-variant) mt-1 line-clamp-2">
             {campaign.description}
           </p>
 
           <div className="mt-4">
             <Progress value={progress} className="h-[0.85rem]" />
             <div className="flex justify-between items-center mt-2">
-              <span className="text-sm font-semibold text-[var(--on-surface)]">
+              <span className="text-sm font-semibold text-(--on-surface)">
                 {formatCurrency(campaign.raisedAmount)}
               </span>
-              <span className="text-xs text-[var(--on-surface-variant)]">
+              <span className="text-xs text-(--on-surface-variant)">
                 {progress}% of {formatCurrency(campaign.goalAmount)}
               </span>
             </div>
           </div>
 
           <div className="flex items-center justify-between mt-3">
-            <div className="flex items-center gap-1 text-xs text-[var(--on-surface-variant)]">
+            <div className="flex items-center gap-1 text-xs text-(--on-surface-variant)">
               <span>by {campaign.creator?.name}</span>
             </div>
             {campaign.deadline && (
-              <div className="flex items-center gap-1 text-xs text-[var(--on-surface-variant)]">
+              <div className="flex items-center gap-1 text-xs text-(--on-surface-variant)">
                 <Calendar size={12} />
                 <span>{formatDate(campaign.deadline)}</span>
               </div>

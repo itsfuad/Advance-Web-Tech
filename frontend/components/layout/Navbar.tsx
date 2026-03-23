@@ -128,7 +128,7 @@ export default function Navbar() {
                     <Link
                       href={`/profile/${user.id}`}
                       onClick={() => setAccountOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-[var(--secondary-hover)]"
+                      className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-(--secondary-hover)"
                     >
                       <Settings size={16} />
                       Account Settings
@@ -136,7 +136,7 @@ export default function Navbar() {
                     <Link
                       href="/dashboard"
                       onClick={() => setAccountOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-[var(--secondary-hover)]"
+                      className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-(--secondary-hover)"
                     >
                       <LayoutDashboard size={16} />
                       Dashboard
@@ -148,7 +148,7 @@ export default function Navbar() {
                         setAccountOpen(false);
                         handleLogout();
                       }}
-                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-left transition-colors hover:bg-[var(--secondary-hover)]"
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-left transition-colors hover:bg-(--secondary-hover)"
                     >
                       <LogOut size={16} />
                       Logout
@@ -182,7 +182,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden bg-[var(--secondary)] border-t border-[var(--border)] px-4 py-4 space-y-3">
+        <div className="md:hidden bg-(--secondary) border-t border-(--border) px-4 py-4 space-y-3">
           <Link
             href="/campaigns"
             className="block text-sm py-2"
@@ -195,7 +195,7 @@ export default function Navbar() {
               {user.role === "admin" && (
                 <Link
                   href="/admin"
-                  className="block text-sm py-2 text-[var(--foreground)]"
+                  className="block text-sm py-2 text-(--foreground)"
                   onClick={() => setMenuOpen(false)}
                 >
                   Admin Panel
@@ -219,7 +219,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/dashboard"
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--secondary-hover)]"
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-(--foreground) hover:bg-(--secondary-hover)"
                 onClick={() => setMenuOpen(false)}
               >
                 <LayoutDashboard size={16} />

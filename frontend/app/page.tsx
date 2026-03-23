@@ -37,15 +37,15 @@ export default async function HomePage() {
           <div className="md:col-span-6 z-10 relative">
             <span className="inline-block px-3 py-1 bg-(--surface-container-low) text-(--on-surface-variant) text-xs font-bold tracking-widest uppercase mb-6 rounded">Global Impact</span>
 
-            <h1 className="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-[var(--primary)] mb-8">
+            <h1 className="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-(--primary) mb-8">
               Empowering Change,
               <br />
-              <span className="text-[var(--outline)]">One Project</span>
+              <span className="text-(--outline)">One Project</span>
               <br />
               at a Time
             </h1>
 
-            <p className="text-xl text-[var(--on-surface-variant)] max-w-md mb-10 leading-relaxed">
+            <p className="text-xl text-(--on-surface-variant) max-w-md mb-10 leading-relaxed">
               Join a global network of visionaries and supporters turning bold ideas into community-led realities.
             </p>
 
@@ -123,19 +123,19 @@ export default async function HomePage() {
       </section>
 
       {/* Impact Stats: Tonal Shift */}
-      <section className="bg-[var(--surface-container-low)] py-20 px-8">
+      <section className="bg-(--surface-container-low) py-20 px-8">
         <div className="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
           <div>
-            <p className="text-5xl font-extrabold text-[var(--primary)] tracking-tighter mb-2">$24.8M</p>
-            <p className="text-xs font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Total Funds Raised</p>
+            <p className="text-5xl font-extrabold text-(--primary) tracking-tighter mb-2">$24.8M</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-(--on-surface-variant)">Total Funds Raised</p>
           </div>
           <div>
-            <p className="text-5xl font-extrabold text-[var(--primary)] tracking-tighter mb-2">1,240+</p>
-            <p className="text-xs font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Successful Projects</p>
+            <p className="text-5xl font-extrabold text-(--primary) tracking-tighter mb-2">1,240+</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-(--on-surface-variant)">Successful Projects</p>
           </div>
           <div>
-            <p className="text-5xl font-extrabold text-[var(--primary)] tracking-tighter mb-2">350k</p>
-            <p className="text-xs font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Lives Impacted</p>
+            <p className="text-5xl font-extrabold text-(--primary) tracking-tighter mb-2">350k</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-(--on-surface-variant)">Lives Impacted</p>
           </div>
         </div>
       </section>
@@ -168,34 +168,34 @@ export default async function HomePage() {
       )}
 
       {/* How It Works: Journey to Impact */}
-      <section className="bg-[var(--surface-container)] py-24 px-4">
+      <section className="bg-(--surface-container-low) py-24 px-4">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl font-extrabold text-[var(--primary)] mb-4">Your Journey to Impact</h2>
-          <p className="text-[var(--on-surface-variant)] max-w-2xl mx-auto mb-12">Three simple steps to transform your vision into a community-supported success story.</p>
+          <h2 className="text-3xl font-extrabold text-(--primary) mb-4">Your Journey to Impact</h2>
+          <p className="text-(--on-surface-variant) max-w-2xl mx-auto mb-12">Three simple steps to transform your vision into a community-supported success story.</p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-[var(--surface-container-lowest)] rounded-full flex items-center justify-center mb-6 shadow-sm">
-                <Rocket size={28} className="text-[var(--primary)]" />
+              <div className="w-24 h-24 bg-(--surface-container-lowest) rounded-full flex items-center justify-center mb-6 shadow-sm">
+                <Rocket size={28} className="text-(--primary)" />
               </div>
-              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Launch Your Idea</h3>
-              <p className="text-[var(--on-surface-variant)] leading-relaxed">Share your story and vision with our intuitive campaign builder tools designed for storytelling.</p>
+              <h3 className="text-xl font-bold text-(--primary) mb-4">Launch Your Idea</h3>
+              <p className="text-(--on-surface-variant) leading-relaxed">Share your story and vision with our intuitive campaign builder tools designed for storytelling.</p>
             </div>
 
             <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-[var(--surface-container-lowest)] rounded-full flex items-center justify-center mb-6 shadow-sm">
-                <Users size={28} className="text-[var(--primary)]" />
+              <div className="w-24 h-24 bg-(--surface-container-lowest) rounded-full flex items-center justify-center mb-6 shadow-sm">
+                <Users size={28} className="text-(--primary)" />
               </div>
-              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Build Your Community</h3>
-              <p className="text-[var(--on-surface-variant)] leading-relaxed">Engage with supporters and build a movement around your cause with integrated social tools.</p>
+              <h3 className="text-xl font-bold text-(--primary) mb-4">Build Your Community</h3>
+              <p className="text-(--on-surface-variant) leading-relaxed">Engage with supporters and build a movement around your cause with integrated social tools.</p>
             </div>
 
             <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-[var(--surface-container-lowest)] rounded-full flex items-center justify-center mb-6 shadow-sm">
-                <Globe size={28} className="text-[var(--primary)]" />
+              <div className="w-24 h-24 bg-(--surface-container-lowest) rounded-full flex items-center justify-center mb-6 shadow-sm">
+                <Globe size={28} className="text-(--primary)" />
               </div>
-              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Make an Impact</h3>
-              <p className="text-[var(--on-surface-variant)] leading-relaxed">Collect funds, execute your project, and share the results with your community of backers.</p>
+              <h3 className="text-xl font-bold text-(--primary) mb-4">Make an Impact</h3>
+              <p className="text-(--on-surface-variant) leading-relaxed">Collect funds, execute your project, and share the results with your community of backers.</p>
             </div>
           </div>
         </div>
@@ -203,14 +203,14 @@ export default async function HomePage() {
 
       {/* Newsletter / CTA Section */}
       <section className="py-32 px-8">
-        <div className="max-w-screen-2xl mx-auto bg-[var(--primary)] rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary-container)] to-transparent opacity-50"></div>
+        <div className="max-w-screen-2xl mx-auto bg-(--primary-container) rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-linear-to-br from-(--primary-container) to-transparent opacity-50"></div>
           <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-[var(--on-primary)] mb-8 tracking-tighter">Ready to change the world?</h2>
-            <p className="text-[var(--on-primary-container)] max-w-xl mx-auto mb-12 text-lg">Join 10,000+ philanthropists receiving weekly stories of impact and early access to breakthrough campaigns.</p>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-8 tracking-tighter">Ready to change the world?</h2>
+            <p className="text-(--surface-container-high) max-w-xl mx-auto mb-12 text-lg">Join 10,000+ philanthropists receiving weekly stories of impact and early access to breakthrough campaigns.</p>
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-              <input className="w-full md:w-96 px-6 py-4 rounded-xl border-none focus:ring-2 focus:ring-[var(--primary-fixed)] bg-[var(--surface-container-lowest)] text-[var(--on-surface)]" placeholder="Enter your email" type="email"/>
-              <button className="w-full md:w-auto bg-[var(--primary-fixed)] text-[var(--on-primary-fixed)] px-10 py-4 rounded-xl font-bold hover:bg-[var(--primary-fixed-dim)] transition-all">Subscribe Now</button>
+              <input className="w-full md:w-96 px-6 py-4 rounded-xl border-none focus:ring-2 focus:ring-(--primary-fixed) bg-(--surface-container-lowest) text-var(--on-surface)" placeholder="Enter your email" type="email"/>
+              <button className="w-full md:w-auto bg-(--primary) text-(--on-primary-fixed) px-10 py-4 rounded-xl font-bold hover:bg-(--primary-hover) transition-all cursor-pointer">Subscribe Now</button>
             </div>
           </div>
         </div>

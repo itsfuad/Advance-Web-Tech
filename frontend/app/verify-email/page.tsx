@@ -76,9 +76,9 @@ function VerifyEmailContent() {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--secondary)]">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-(--border) bg-(--secondary)">
             {status === "loading" && (
-              <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
+              <Loader2 className="h-5 w-5 animate-spin text-(--muted-foreground)" />
             )}
             {status === "success" && (
               <CheckCircle2 className="h-5 w-5 text-emerald-600" />
@@ -92,7 +92,7 @@ function VerifyEmailContent() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 text-center">
-          <p className="text-sm text-[var(--muted-foreground)]">{message}</p>
+          <p className="text-sm text-(--muted-foreground)">{message}</p>
 
           {status !== "loading" && (
             <div className="flex flex-col gap-3">
@@ -101,7 +101,7 @@ function VerifyEmailContent() {
               </Button>
               <Link
                 href="/"
-                className="text-sm text-[var(--foreground)] hover:underline"
+                className="text-sm text-(--foreground) hover:underline"
               >
                 Back to Home
               </Link>
@@ -120,15 +120,15 @@ export default function VerifyEmailPage() {
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--secondary)]">
-                <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-(--border) bg-(--secondary)">
+                <Loader2 className="h-5 w-5 animate-spin text-(--muted-foreground)" />
               </div>
               <CardTitle className="text-2xl font-bold">
                 Email Verification
               </CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-sm text-[var(--muted-foreground)]">
+              <p className="text-sm text-(--muted-foreground)">
                 Verifying your email address...
               </p>
             </CardContent>

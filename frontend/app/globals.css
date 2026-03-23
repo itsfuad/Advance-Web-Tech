@@ -3,7 +3,8 @@
 
 :root {
     --background: #f8faf6;
-    --surface: #f8faf6;
+    --surface: #f2f4f1;
+    --surface-container: #bfc9c3;
     --surface-container-high:  #bfc9c3;
     --surface-container-low: #f2f4f1;
     --surface-container-lowest: #ffffff;
@@ -11,15 +12,16 @@
     --foreground: #191c1b;
     --on-surface-variant: #404944;
 
-    --primary: #003426;
+    --primary:  #0f4c3a;
     --primary-foreground: #ffffff;
-    --primary-hover: #0f4c3a;
-    --primary-fixed: #b4efd6;
-    --primary-fixed-dim: #99d3ba;
-    --primary-container: #0f4c3a;
+    --primary-hover: #14634c;
+    --primary-fixed: #67bc6d;
+    --primary-fixed-dim: #7fdb7f;
+    --primary-container:  #003426;
+    --on-primary-fixed: white;
 
     --secondary: #4d635d;
-    --secondary-foreground: #ffffff;
+    --secondary-foreground:  #f2f4f1;
 
     --muted: #e7e9e5;
     --muted-foreground: #404944;

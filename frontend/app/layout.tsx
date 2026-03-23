@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased">
       <body
         suppressHydrationWarning
-        className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] font-sans"
+        className="min-h-full flex flex-col bg-(--background) text-(--foreground) font-sans"
       >
         <ClientDomSanitizer />
         <AuthProvider>
