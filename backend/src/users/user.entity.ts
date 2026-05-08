@@ -29,7 +29,7 @@ export class User {
   @Column({ type: 'boolean', default: false })
   emailVerified: boolean;
 
-  @Column({ nullable: true, type: 'datetime' })
+  @Column({ nullable: true, type: 'timestamp' })
   emailVerifiedAt: Date | null;
 
   @Exclude()
@@ -53,7 +53,7 @@ export class User {
   otpCode: string | null;
 
   @Exclude()
-  @Column({ nullable: true, type: 'datetime' })
+  @Column({ nullable: true, type: 'timestamp' })
   otpExpiry: Date | null;
 
   @CreateDateColumn()

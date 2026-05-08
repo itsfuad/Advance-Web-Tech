@@ -39,7 +39,7 @@ export class Campaign {
   @Column({ type: 'text', default: CampaignStatus.ACTIVE })
   status: CampaignStatus;
 
-  @Column({ nullable: true, type: 'datetime' })
+  @Column({ nullable: true, type: 'timestamp' })
   deadline: Date;
 
   @Column({ nullable: true })
