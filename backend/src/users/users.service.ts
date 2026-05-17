@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { User, UserStatus } from './user.entity';
 import {
@@ -23,10 +24,17 @@ export class UsersService {
     private emailService: EmailService,
   ) {}
 
-  async findAll(page = 1, limit = 20, search?: string) {
+  async findAll(
+    page = 1,
+    limit = 20,
+    search?: string,
+    status?: string,
+    subscription?: string,
+    sortBy?: string,
+    sortOrder: 'ASC' | 'DESC' = 'DESC',
+  ) {
     const qb = this.userRepository
       .createQueryBuilder('user')
-      .orderBy('user.createdAt', 'DESC')
       .skip((page - 1) * limit)
       .take(limit);
 
@@ -35,6 +43,30 @@ export class UsersService {
         search: `%${search}%`,
       });
     }
+
+    if (status && ['active', 'banned'].includes(status)) {
+      qb.andWhere('user.status = :status', { status });
+    }
+
+    if (subscription === 'subscribed') {
+      qb.andWhere('user.newsletterSubscribed = :subscribed', {
+        subscribed: true,
+      });
+    } else if (subscription === 'unsubscribed') {
+      qb.andWhere('user.newsletterSubscribed = :subscribed', {
+        subscribed: false,
+      });
+    }
+
+    const allowedSortBy: Record<string, string> = {
+      createdAt: 'user.createdAt',
+      name: 'user.name',
+      email: 'user.email',
+      status: 'user.status',
+    };
+    const sortColumn = allowedSortBy[sortBy || 'createdAt'] || 'user.createdAt';
+    const direction = sortOrder === 'ASC' ? 'ASC' : 'DESC';
+    qb.orderBy(sortColumn, direction);
 
     const [users, total] = await qb.getManyAndCount();
     return {
@@ -119,23 +151,113 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
 
     const previousStatus = user.status;
-    user.status = dto.status;
-    await this.userRepository.save(user);
+    const nextStatus = dto.status;
 
-    const { password, otpCode, otpExpiry, ...profile } = user;
-    if (previousStatus !== user.status) {
-      await this.emailService.sendUserStatusEmail(
-        user.email,
-        user.name,
-        previousStatus,
-        user.status,
-      );
+    if (previousStatus === nextStatus) {
+      const { password, otpCode, otpExpiry, ...profile } = user;
+      return {
+        ...profile,
+        emailVerified: user.emailVerified,
+        emailVerifiedAt: user.emailVerifiedAt,
+      };
     }
+
+    const emailSent = await this.emailService.sendUserStatusEmail(
+      user.email,
+      user.name,
+      previousStatus,
+      nextStatus,
+    );
+
+    if (!emailSent) {
+      throw new BadRequestException('Failed to send status notification email');
+    }
+
+    await this.userRepository.update(user.id, { status: nextStatus });
+    const updated = await this.userRepository.findOne({ where: { id: user.id } });
+    if (!updated) throw new NotFoundException('User not found');
+    const { password, otpCode, otpExpiry, ...profile } = updated;
     return {
       ...profile,
-      emailVerified: user.emailVerified,
-      emailVerifiedAt: user.emailVerifiedAt,
+      emailVerified: updated.emailVerified,
+      emailVerifiedAt: updated.emailVerifiedAt,
     };
+  }
+
+  async subscribeToNewsletter(userId: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    if (user.newsletterSubscribed) {
+      return { subscribed: true, message: 'Already subscribed to newsletter' };
+    }
+
+    user.newsletterSubscribed = true;
+    await this.userRepository.save(user);
+    return { subscribed: true, message: 'Subscribed to newsletter' };
+  }
+
+  async unsubscribeFromNewsletter(userId: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    if (!user.newsletterSubscribed) {
+      return { subscribed: false, message: 'Already unsubscribed' };
+    }
+
+    user.newsletterSubscribed = false;
+    await this.userRepository.save(user);
+    return { subscribed: false, message: 'Unsubscribed from newsletter' };
+  }
+
+  async publishNewsletter(subject: string, message: string) {
+    const users = await this.userRepository.find({
+      where: { newsletterSubscribed: true },
+    });
+
+    if (users.length === 0) {
+      return { sent: false, recipients: 0, message: 'No subscribers found' };
+    }
+
+    let sentCount = 0;
+    for (const user of users) {
+      if (!user.newsletterUnsubscribeToken) {
+        user.newsletterUnsubscribeToken = randomBytes(32).toString('hex');
+        await this.userRepository.save(user);
+      }
+      const sent = await this.emailService.sendNewsletterEmail(
+        user.email,
+        subject,
+        message,
+        user.newsletterUnsubscribeToken,
+      );
+      if (sent) {
+        sentCount += 1;
+      }
+    }
+
+    if (sentCount === 0) {
+      throw new BadRequestException('Failed to send newsletter email');
+    }
+
+    return { sent: true, recipients: sentCount };
+  }
+
+  async unsubscribeFromNewsletterLink(token?: string) {
+    if (!token) {
+      throw new BadRequestException('Invalid unsubscribe link');
+    }
+    const user = await this.userRepository.findOne({
+      where: { newsletterUnsubscribeToken: token },
+    });
+    if (!user) {
+      throw new NotFoundException('Invalid unsubscribe link');
+    }
+    if (!user.newsletterSubscribed) {
+      return { unsubscribed: true, message: 'Already unsubscribed' };
+    }
+
+    user.newsletterSubscribed = false;
+    await this.userRepository.save(user);
+    return { unsubscribed: true, message: 'You have been unsubscribed' };
   }
 
   async getUserStats(userId: string) {

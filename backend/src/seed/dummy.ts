@@ -35,7 +35,7 @@ type DummyUserSeed = {
   name: string;
   password: string;
   role: 'admin' | 'user';
-  status: 'active' | 'blocked' | 'banned';
+  status: 'active' | 'banned';
   emailVerified: boolean;
   verifiedMinutesAgo: number;
   profileImage: string;

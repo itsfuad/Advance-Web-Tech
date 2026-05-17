@@ -138,11 +138,10 @@ export class EmailService {
     name: string,
     previousStatus: string,
     currentStatus: string,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const fromEmail = this.configService.get('SMTP_FROM');
     const subjectMap: Record<string, string> = {
       banned: 'Your FundRise account has been banned',
-      blocked: 'Your FundRise account has been blocked',
       active: 'Your FundRise account has been reactivated',
     };
     const subject = subjectMap[currentStatus] ?? 'Account status updated';
@@ -171,10 +170,12 @@ export class EmailService {
     try {
       await this.transporter.sendMail(mailOptions);
       this.logger.log(`Status email sent to ${to}`);
+      return true;
     } catch (error) {
       this.logger.error(
         `Failed to send status email to ${to}: ${error.message}`,
       );
+      return false;
     }
   }
 
@@ -183,7 +184,7 @@ export class EmailService {
     name: string,
     campaignTitle: string,
     status: string,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const fromEmail = this.configService.get('SMTP_FROM');
     const subject =
       status === 'frozen'
@@ -214,10 +215,53 @@ export class EmailService {
     try {
       await this.transporter.sendMail(mailOptions);
       this.logger.log(`Campaign status email sent to ${to}`);
+      return true;
     } catch (error) {
       this.logger.error(
         `Failed to send campaign status email to ${to}: ${error.message}`,
       );
+      return false;
+    }
+  }
+
+  async sendNewsletterEmail(
+    recipient: string,
+    subject: string,
+    message: string,
+    unsubscribeToken: string,
+  ): Promise<boolean> {
+    const fromEmail = this.configService.get('SMTP_FROM');
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const unsubscribeUrl = `${frontendUrl}/newsletter?token=${unsubscribeToken}`;
+    const mailOptions = {
+      from: `"FundRise" <${fromEmail}>`,
+      to: recipient,
+      subject,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; background: #ffffff; border: 1px solid #ececec; border-radius: 8px; overflow: hidden;">
+          <div style="background: #000; color: #fff; padding: 20px;">
+            <h2 style="margin: 0; font-size: 20px;">FundRise Newsletter</h2>
+          </div>
+          <div style="padding: 20px; color: #222; line-height: 1.6;">
+            ${message.replace(/\n/g, '<br/>')}
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;" />
+            <p style="font-size: 13px; color: #666;">
+              Manage subscription:
+              <a href="${unsubscribeUrl}" style="color: #000;">Unsubscribe</a>
+            </p>
+          </div>
+        </div>
+      `,
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      this.logger.log(`Newsletter sent to ${recipient}`);
+      return true;
+    } catch (error) {
+      this.logger.error(`Failed to send newsletter: ${error.message}`);
+      return false;
     }
   }
 }

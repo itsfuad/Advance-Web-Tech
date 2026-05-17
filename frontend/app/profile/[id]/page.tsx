@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, Camera, MailCheck } from "lucide-react";
 import { resolveImageUrl, formatDate, getApiErrorMessage } from "@/lib/utils";
+import NewsletterCta from "@/components/home/NewsletterCta";
 
 const PAGE_LIMIT = 9;
 
@@ -468,6 +469,18 @@ export default function ProfilePage() {
                   Update Password
                 </Button>
               </form>
+            </CardContent>
+          </Card>
+
+          <Card className="mb-10">
+            <CardHeader>
+              <CardTitle>Newsletter</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-neutral-500 mb-4">
+                Subscribe or unsubscribe from update emails.
+              </p>
+              <NewsletterCta />
             </CardContent>
           </Card>
         </>

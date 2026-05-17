@@ -14,7 +14,6 @@ export enum UserRole {
 
 export enum UserStatus {
   ACTIVE = 'active',
-  BLOCKED = 'blocked',
   BANNED = 'banned',
 }
 
@@ -47,6 +46,12 @@ export class User {
 
   @Column({ type: 'text', default: UserStatus.ACTIVE })
   status: UserStatus;
+
+  @Column({ type: 'boolean', default: false })
+  newsletterSubscribed: boolean;
+
+  @Column({ type: 'text', nullable: true, unique: true })
+  newsletterUnsubscribeToken: string | null;
 
   @Exclude()
   @Column({ nullable: true, type: 'text' })

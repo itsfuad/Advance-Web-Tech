@@ -4,7 +4,8 @@ export interface User {
   name: string;
   profileImage?: string;
   role: "admin" | "user";
-  status: "active" | "blocked" | "banned";
+  status: "active" | "banned";
+  newsletterSubscribed?: boolean;
   emailVerified?: boolean;
   emailVerifiedAt?: string | null;
   createdAt: string;

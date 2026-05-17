@@ -3,7 +3,9 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import * as fs from 'fs';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
+import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
+import { User } from './users/user.entity';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,6 +40,50 @@ async function bootstrap() {
 
   sanitizeUploads();
   setInterval(sanitizeUploads, 10 * 60 * 1000);
+
+  const dataSource = app.get(DataSource);
+  await dataSource
+    .getRepository(User)
+    .createQueryBuilder()
+    .update(User)
+    .set({ status: 'banned' as User['status'] })
+    .where('status = :blocked', { blocked: 'blocked' })
+    .execute();
+
+  // Cleanup legacy DB constraints that still reference "blocked"
+  const blockedConstraints: Array<{ conname: string }> = await dataSource.query(
+    `
+      SELECT c.conname
+      FROM pg_constraint c
+      JOIN pg_class t ON t.oid = c.conrelid
+      WHERE t.relname = 'users'
+        AND c.contype = 'c'
+        AND pg_get_constraintdef(c.oid) ILIKE '%status%'
+        AND pg_get_constraintdef(c.oid) ILIKE '%blocked%'
+    `,
+  );
+  for (const constraint of blockedConstraints) {
+    await dataSource.query(
+      `ALTER TABLE users DROP CONSTRAINT IF EXISTS "${constraint.conname}"`,
+    );
+  }
+
+  await dataSource.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint c
+        JOIN pg_class t ON t.oid = c.conrelid
+        WHERE t.relname = 'users'
+          AND c.conname = 'users_status_check'
+      ) THEN
+        ALTER TABLE users
+        ADD CONSTRAINT users_status_check
+        CHECK (status IN ('active', 'banned'));
+      END IF;
+    END$$;
+  `);
 
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
