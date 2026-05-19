@@ -71,8 +71,20 @@ export class CampaignsController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('search') search?: string,
+    @Query('status') status?: string,
+    @Query('reported') reported?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'ASC' | 'DESC',
   ) {
-    return this.campaignsService.findAllAdmin(page, limit, search);
+    return this.campaignsService.findAllAdmin(
+      page,
+      limit,
+      search,
+      status,
+      reported,
+      sortBy,
+      sortOrder,
+    );
   }
 
   @Get('admin/reported')

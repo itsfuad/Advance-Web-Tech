@@ -61,11 +61,18 @@ export class CampaignsService {
     return { data, total, page, limit };
   }
 
-  async findAllAdmin(page = 1, limit = 20, search?: string) {
+  async findAllAdmin(
+    page = 1,
+    limit = 20,
+    search?: string,
+    status?: string,
+    reported?: string,
+    sortBy?: string,
+    sortOrder: 'ASC' | 'DESC' = 'DESC',
+  ) {
     const qb = this.campaignRepository
       .createQueryBuilder('campaign')
       .leftJoinAndSelect('campaign.creator', 'creator')
-      .orderBy('campaign.createdAt', 'DESC')
       .skip((page - 1) * limit)
       .take(limit);
 
@@ -75,6 +82,28 @@ export class CampaignsService {
         { search: `%${search}%` },
       );
     }
+
+    if (status && ['active', 'frozen', 'closed'].includes(status)) {
+      qb.andWhere('campaign.status = :status', { status });
+    }
+
+    if (reported === 'true') {
+      qb.andWhere('campaign.reported = :reported', { reported: true });
+    } else if (reported === 'false') {
+      qb.andWhere('campaign.reported = :reported', { reported: false });
+    }
+
+    const allowedSortBy: Record<string, string> = {
+      createdAt: 'campaign.createdAt',
+      raisedAmount: 'campaign.raisedAmount',
+      goalAmount: 'campaign.goalAmount',
+      title: 'campaign.title',
+      status: 'campaign.status',
+    };
+    const sortColumn =
+      allowedSortBy[sortBy || 'createdAt'] || 'campaign.createdAt';
+    const direction = sortOrder === 'ASC' ? 'ASC' : 'DESC';
+    qb.orderBy(sortColumn, direction);
 
     const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit };
@@ -180,35 +209,67 @@ export class CampaignsService {
   }
 
   async freeze(id: string) {
-    const campaign = await this.campaignRepository.findOne({ where: { id } });
+    const campaign = await this.campaignRepository.findOne({
+      where: { id },
+      relations: ['creator'],
+    });
     if (!campaign) throw new NotFoundException('Campaign not found');
-    campaign.status = CampaignStatus.FROZEN;
-    const saved = await this.campaignRepository.save(campaign);
-    if (campaign.creator?.email) {
-      await this.emailService.sendCampaignStatusEmail(
-        campaign.creator.email,
-        campaign.creator.name,
-        campaign.title,
-        CampaignStatus.FROZEN,
-      );
+
+    if (campaign.status === CampaignStatus.FROZEN) {
+      return campaign;
     }
-    return saved;
+
+    if (!campaign.creator?.email) {
+      throw new BadRequestException('Campaign creator email not found');
+    }
+
+    const emailSent = await this.emailService.sendCampaignStatusEmail(
+      campaign.creator.email,
+      campaign.creator.name,
+      campaign.title,
+      CampaignStatus.FROZEN,
+    );
+
+    if (!emailSent) {
+      throw new BadRequestException('Failed to send campaign status email');
+    }
+
+    await this.campaignRepository.update(campaign.id, {
+      status: CampaignStatus.FROZEN,
+    });
+    return this.findOne(campaign.id);
   }
 
   async unfreeze(id: string) {
-    const campaign = await this.campaignRepository.findOne({ where: { id } });
+    const campaign = await this.campaignRepository.findOne({
+      where: { id },
+      relations: ['creator'],
+    });
     if (!campaign) throw new NotFoundException('Campaign not found');
-    campaign.status = CampaignStatus.ACTIVE;
-    const saved = await this.campaignRepository.save(campaign);
-    if (campaign.creator?.email) {
-      await this.emailService.sendCampaignStatusEmail(
-        campaign.creator.email,
-        campaign.creator.name,
-        campaign.title,
-        CampaignStatus.ACTIVE,
-      );
+
+    if (campaign.status === CampaignStatus.ACTIVE) {
+      return campaign;
     }
-    return saved;
+
+    if (!campaign.creator?.email) {
+      throw new BadRequestException('Campaign creator email not found');
+    }
+
+    const emailSent = await this.emailService.sendCampaignStatusEmail(
+      campaign.creator.email,
+      campaign.creator.name,
+      campaign.title,
+      CampaignStatus.ACTIVE,
+    );
+
+    if (!emailSent) {
+      throw new BadRequestException('Failed to send campaign status email');
+    }
+
+    await this.campaignRepository.update(campaign.id, {
+      status: CampaignStatus.ACTIVE,
+    });
+    return this.findOne(campaign.id);
   }
 
   async getReported(page = 1, limit = 20, search?: string) {
@@ -247,4 +308,5 @@ export class CampaignsService {
     campaign.raisedAmount += amount;
     return this.campaignRepository.save(campaign);
   }
+
 }

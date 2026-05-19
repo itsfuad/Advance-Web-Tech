@@ -20,6 +20,13 @@ function VerifyEmailContent() {
     "loading",
   );
   const [message, setMessage] = useState("Verifying your email address...");
+  const postVerifyHref = user ? (user.role === "admin" ? "/admin" : "/dashboard") : "/login";
+  const postVerifyLabel =
+    user
+      ? (user.role === "admin"
+        ? "Back to Admin Panel"
+        : "Back to Dashboard")
+      : "Go to Login";
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -96,8 +103,11 @@ function VerifyEmailContent() {
 
           {status !== "loading" && (
             <div className="flex flex-col gap-3">
-              <Button onClick={() => router.push("/login")} className="w-full">
-                Go to Login
+              <Button
+                onClick={() => router.push(postVerifyHref)}
+                className="w-full"
+              >
+                {postVerifyLabel}
               </Button>
               <Link
                 href="/"

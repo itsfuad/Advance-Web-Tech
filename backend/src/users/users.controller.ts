@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Patch,
   Delete,
   Body,
@@ -24,6 +25,7 @@ import {
   UpdateProfileDto,
   ChangePasswordDto,
   UpdateUserStatusDto,
+  PublishNewsletterDto,
 } from './user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -42,13 +44,48 @@ export class UsersController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('search') search?: string,
+    @Query('status') status?: string,
+    @Query('subscription') subscription?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'ASC' | 'DESC',
   ) {
-    return this.usersService.findAll(page, limit, search);
+    return this.usersService.findAll(
+      page,
+      limit,
+      search,
+      status,
+      subscription,
+      sortBy,
+      sortOrder,
+    );
   }
 
   @Get('me')
   getMe(@Request() req) {
     return this.usersService.findOne(req.user.id);
+  }
+
+  @Post('newsletter/subscribe')
+  subscribeToNewsletter(@Request() req) {
+    return this.usersService.subscribeToNewsletter(req.user.id);
+  }
+
+  @Post('newsletter/unsubscribe')
+  unsubscribeFromNewsletter(@Request() req) {
+    return this.usersService.unsubscribeFromNewsletter(req.user.id);
+  }
+
+  @Public()
+  @Get('newsletter/unsubscribe')
+  unsubscribeFromNewsletterLink(@Query('token') token?: string) {
+    return this.usersService.unsubscribeFromNewsletterLink(token);
+  }
+
+  @Post('newsletter/publish')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  publishNewsletter(@Body(ValidationPipe) dto: PublishNewsletterDto) {
+    return this.usersService.publishNewsletter(dto.subject, dto.message);
   }
 
   @Public()

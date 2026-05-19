@@ -14,7 +14,6 @@ export enum UserRole {
 
 export enum UserStatus {
   ACTIVE = 'active',
-  BLOCKED = 'blocked',
   BANNED = 'banned',
 }
 
@@ -29,7 +28,7 @@ export class User {
   @Column({ type: 'boolean', default: false })
   emailVerified: boolean;
 
-  @Column({ nullable: true, type: 'datetime' })
+  @Column({ nullable: true, type: 'timestamp' })
   emailVerifiedAt: Date | null;
 
   @Exclude()
@@ -48,12 +47,18 @@ export class User {
   @Column({ type: 'text', default: UserStatus.ACTIVE })
   status: UserStatus;
 
+  @Column({ type: 'boolean', default: false })
+  newsletterSubscribed: boolean;
+
+  @Column({ type: 'text', nullable: true, unique: true })
+  newsletterUnsubscribeToken: string | null;
+
   @Exclude()
   @Column({ nullable: true, type: 'text' })
   otpCode: string | null;
 
   @Exclude()
-  @Column({ nullable: true, type: 'datetime' })
+  @Column({ nullable: true, type: 'timestamp' })
   otpExpiry: Date | null;
 
   @CreateDateColumn()

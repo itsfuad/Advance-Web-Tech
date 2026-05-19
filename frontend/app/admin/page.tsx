@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import {
   Users,
@@ -40,10 +42,26 @@ export default function AdminPage() {
   const [userTotal, setUserTotal] = useState(0);
   const [reportedTotal, setReportedTotal] = useState(0);
   const [campaignSearch, setCampaignSearch] = useState("");
+  const [campaignStatusFilter, setCampaignStatusFilter] = useState("all");
+  const [campaignReportedFilter, setCampaignReportedFilter] = useState("all");
+  const [campaignSortBy, setCampaignSortBy] = useState("createdAt");
+  const [campaignSortOrder, setCampaignSortOrder] = useState<"ASC" | "DESC">(
+    "DESC",
+  );
   const [userSearch, setUserSearch] = useState("");
   const [campaignsLoading, setCampaignsLoading] = useState(false);
   const [usersLoading, setUsersLoading] = useState(false);
   const [reportedLoading, setReportedLoading] = useState(false);
+  const [userStatusFilter, setUserStatusFilter] = useState("all");
+  const [userSubscriptionFilter, setUserSubscriptionFilter] = useState("all");
+  const [userSortBy, setUserSortBy] = useState("createdAt");
+  const [userSortOrder, setUserSortOrder] = useState<"ASC" | "DESC">("DESC");
+  const [actionLoading, setActionLoading] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [newsletterSubject, setNewsletterSubject] = useState("");
+  const [newsletterMessage, setNewsletterMessage] = useState("");
+  const [newsletterStatus, setNewsletterStatus] = useState("");
 
   const CAMPAIGN_LIMIT = 8;
   const USER_LIMIT = 8;
@@ -71,6 +89,14 @@ export default function AdminPage() {
       if (campaignSearch.trim()) {
         params.set("search", campaignSearch.trim());
       }
+      if (campaignStatusFilter !== "all") {
+        params.set("status", campaignStatusFilter);
+      }
+      if (campaignReportedFilter !== "all") {
+        params.set("reported", campaignReportedFilter);
+      }
+      params.set("sortBy", campaignSortBy);
+      params.set("sortOrder", campaignSortOrder);
       const res = await api.get(`/campaigns/admin/all?${params.toString()}`);
       setCampaigns(res.data.data);
       setCampaignTotal(res.data.total);
@@ -79,7 +105,14 @@ export default function AdminPage() {
     } finally {
       setCampaignsLoading(false);
     }
-  }, [campaignPage, campaignSearch]);
+  }, [
+    campaignPage,
+    campaignSearch,
+    campaignStatusFilter,
+    campaignReportedFilter,
+    campaignSortBy,
+    campaignSortOrder,
+  ]);
 
   const loadUsers = useCallback(async () => {
     setUsersLoading(true);
@@ -91,6 +124,12 @@ export default function AdminPage() {
       if (userSearch.trim()) {
         params.set("search", userSearch.trim());
       }
+      if (userStatusFilter !== "all") params.set("status", userStatusFilter);
+      if (userSubscriptionFilter !== "all") {
+        params.set("subscription", userSubscriptionFilter);
+      }
+      params.set("sortBy", userSortBy);
+      params.set("sortOrder", userSortOrder);
       const res = await api.get(`/users?${params.toString()}`);
       setUsers(res.data.data);
       setUserTotal(res.data.total);
@@ -99,7 +138,14 @@ export default function AdminPage() {
     } finally {
       setUsersLoading(false);
     }
-  }, [userPage, userSearch]);
+  }, [
+    userPage,
+    userSearch,
+    userStatusFilter,
+    userSubscriptionFilter,
+    userSortBy,
+    userSortOrder,
+  ]);
 
   const loadReported = useCallback(async () => {
     setReportedLoading(true);
@@ -149,37 +195,73 @@ export default function AdminPage() {
   }, [user, loadReported]);
 
   const handleFreeze = async (id: string) => {
-    await api.patch(`/campaigns/${id}/freeze`);
-    setCampaigns((cs) =>
-      cs.map((c) => (c.id === id ? { ...c, status: "frozen" } : c)),
-    );
-    setReported((cs) =>
-      cs.map((c) => (c.id === id ? { ...c, status: "frozen" } : c)),
-    );
+    const key = `campaign-${id}`;
+    setActionLoading((prev) => ({ ...prev, [key]: true }));
+    try {
+      const res = await api.patch(`/campaigns/${id}/freeze`);
+      const next = res.data;
+      setCampaigns((cs) => cs.map((c) => (c.id === id ? { ...c, ...next } : c)));
+      setReported((cs) => cs.map((c) => (c.id === id ? { ...c, ...next } : c)));
+    } finally {
+      setActionLoading((prev) => ({ ...prev, [key]: false }));
+    }
   };
 
   const handleUnfreeze = async (id: string) => {
-    await api.patch(`/campaigns/${id}/unfreeze`);
-    setCampaigns((cs) =>
-      cs.map((c) => (c.id === id ? { ...c, status: "active" } : c)),
-    );
-    setReported((cs) =>
-      cs.map((c) => (c.id === id ? { ...c, status: "active" } : c)),
-    );
+    const key = `campaign-${id}`;
+    setActionLoading((prev) => ({ ...prev, [key]: true }));
+    try {
+      const res = await api.patch(`/campaigns/${id}/unfreeze`);
+      const next = res.data;
+      setCampaigns((cs) => cs.map((c) => (c.id === id ? { ...c, ...next } : c)));
+      setReported((cs) => cs.map((c) => (c.id === id ? { ...c, ...next } : c)));
+    } finally {
+      setActionLoading((prev) => ({ ...prev, [key]: false }));
+    }
   };
 
   const handleUserStatus = async (id: string, status: User["status"]) => {
-    await api.patch(`/users/${id}/status`, { status });
-    setUsers((us) => us.map((u) => (u.id === id ? { ...u, status } : u)));
+    const key = `user-${id}`;
+    setActionLoading((prev) => ({ ...prev, [key]: true }));
+    try {
+      const res = await api.patch(`/users/${id}/status`, { status });
+      setUsers((us) => us.map((u) => (u.id === id ? { ...u, ...res.data } : u)));
+    } finally {
+      setActionLoading((prev) => ({ ...prev, [key]: false }));
+    }
   };
 
   const handleDismissReport = async (id: string) => {
-    await api.patch(`/campaigns/${id}/dismiss-report`);
-    setReported((cs) => cs.filter((c) => c.id !== id));
-    setReportedTotal((total) => Math.max(0, total - 1));
-    setCampaigns((cs) =>
-      cs.map((c) => (c.id === id ? { ...c, reported: false } : c)),
-    );
+    const key = `report-${id}`;
+    setActionLoading((prev) => ({ ...prev, [key]: true }));
+    try {
+      await api.patch(`/campaigns/${id}/dismiss-report`);
+      setReported((cs) => cs.filter((c) => c.id !== id));
+      setReportedTotal((total) => Math.max(0, total - 1));
+      setCampaigns((cs) =>
+        cs.map((c) => (c.id === id ? { ...c, reported: false } : c)),
+      );
+    } finally {
+      setActionLoading((prev) => ({ ...prev, [key]: false }));
+    }
+  };
+
+  const handlePublishNewsletter = async () => {
+    setNewsletterStatus("");
+    const subject = newsletterSubject.trim();
+    const message = newsletterMessage.trim();
+    if (!subject || !message) return;
+    setActionLoading((prev) => ({ ...prev, newsletter: true }));
+    try {
+      const res = await api.post("/users/newsletter/publish", { subject, message });
+      setNewsletterStatus(`Sent to ${res.data.recipients} subscriber(s).`);
+      setNewsletterSubject("");
+      setNewsletterMessage("");
+    } catch {
+      setNewsletterStatus("Failed to publish newsletter.");
+    } finally {
+      setActionLoading((prev) => ({ ...prev, newsletter: false }));
+    }
   };
 
   if (isLoading || loading) {
@@ -576,6 +658,37 @@ export default function AdminPage() {
                 <div className="mt-2 text-xs text-neutral-500">Recent donations scaled by amount</div>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Publish Newsletter</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Input
+                  placeholder="Email subject"
+                  value={newsletterSubject}
+                  onChange={(e) => setNewsletterSubject(e.target.value)}
+                />
+                <Textarea
+                  placeholder="Write newsletter message..."
+                  value={newsletterMessage}
+                  onChange={(e) => setNewsletterMessage(e.target.value)}
+                  className="min-h-28"
+                />
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={handlePublishNewsletter}
+                    loading={Boolean(actionLoading.newsletter)}
+                    disabled={!newsletterSubject.trim() || !newsletterMessage.trim()}
+                  >
+                    Publish
+                  </Button>
+                  {newsletterStatus && (
+                    <p className="text-xs text-neutral-500">{newsletterStatus}</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       )}
@@ -593,6 +706,56 @@ export default function AdminPage() {
               }}
               className="sm:max-w-xs"
             />
+            <Select
+              value={campaignStatusFilter}
+              onChange={(e) => {
+                setCampaignStatusFilter(e.target.value);
+                setCampaignPage(1);
+              }}
+              className="sm:w-40"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="frozen">Frozen</option>
+              <option value="closed">Closed</option>
+            </Select>
+            <Select
+              value={campaignReportedFilter}
+              onChange={(e) => {
+                setCampaignReportedFilter(e.target.value);
+                setCampaignPage(1);
+              }}
+              className="sm:w-40"
+            >
+              <option value="all">All Reports</option>
+              <option value="true">Reported</option>
+              <option value="false">Not Reported</option>
+            </Select>
+            <Select
+              value={campaignSortBy}
+              onChange={(e) => {
+                setCampaignSortBy(e.target.value);
+                setCampaignPage(1);
+              }}
+              className="sm:w-44"
+            >
+              <option value="createdAt">Sort: Created</option>
+              <option value="raisedAmount">Sort: Raised</option>
+              <option value="goalAmount">Sort: Goal</option>
+              <option value="title">Sort: Title</option>
+              <option value="status">Sort: Status</option>
+            </Select>
+            <Select
+              value={campaignSortOrder}
+              onChange={(e) => {
+                setCampaignSortOrder(e.target.value as "ASC" | "DESC");
+                setCampaignPage(1);
+              }}
+              className="sm:w-36"
+            >
+              <option value="DESC">Newest/Desc</option>
+              <option value="ASC">Oldest/Asc</option>
+            </Select>
           </div>
           {campaignsLoading ? (
             <div className="space-y-2">
@@ -606,6 +769,9 @@ export default function AdminPage() {
           ) : (
             <div className="space-y-2">
               {campaigns.map((c) => (
+                (() => {
+                  const isBusy = Boolean(actionLoading[`campaign-${c.id}`]);
+                  return (
                 <div
                   key={c.id}
                   className="border border-neutral-200 rounded-lg p-4 flex items-center gap-4"
@@ -645,6 +811,7 @@ export default function AdminPage() {
                         size="icon"
                         title="Freeze"
                         onClick={() => handleFreeze(c.id)}
+                        loading={isBusy}
                       >
                         <Snowflake size={15} className="text-blue-500" />
                       </Button>
@@ -654,12 +821,15 @@ export default function AdminPage() {
                         size="icon"
                         title="Unfreeze"
                         onClick={() => handleUnfreeze(c.id)}
+                        loading={isBusy}
                       >
                         <Play size={15} className="text-green-500" />
                       </Button>
                     ) : null}
                   </div>
                 </div>
+                  );
+                })()
               ))}
             </div>
           )}
@@ -685,6 +855,54 @@ export default function AdminPage() {
               }}
               className="sm:max-w-xs"
             />
+            <Select
+              value={userStatusFilter}
+              onChange={(e) => {
+                setUserStatusFilter(e.target.value);
+                setUserPage(1);
+              }}
+              className="sm:w-40"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="banned">Banned</option>
+            </Select>
+            <Select
+              value={userSubscriptionFilter}
+              onChange={(e) => {
+                setUserSubscriptionFilter(e.target.value);
+                setUserPage(1);
+              }}
+              className="sm:w-44"
+            >
+              <option value="all">All Newsletter</option>
+              <option value="subscribed">Subscribed</option>
+              <option value="unsubscribed">Unsubscribed</option>
+            </Select>
+            <Select
+              value={userSortBy}
+              onChange={(e) => {
+                setUserSortBy(e.target.value);
+                setUserPage(1);
+              }}
+              className="sm:w-40"
+            >
+              <option value="createdAt">Sort: Joined</option>
+              <option value="name">Sort: Name</option>
+              <option value="email">Sort: Email</option>
+              <option value="status">Sort: Status</option>
+            </Select>
+            <Select
+              value={userSortOrder}
+              onChange={(e) => {
+                setUserSortOrder(e.target.value as "ASC" | "DESC");
+                setUserPage(1);
+              }}
+              className="sm:w-36"
+            >
+              <option value="DESC">Newest/Desc</option>
+              <option value="ASC">Oldest/Asc</option>
+            </Select>
           </div>
           {usersLoading ? (
             <div className="space-y-2">
@@ -698,6 +916,9 @@ export default function AdminPage() {
           ) : (
             <div className="space-y-2">
               {users.map((u) => (
+                (() => {
+                  const isBusy = Boolean(actionLoading[`user-${u.id}`]);
+                  return (
                 <div
                   key={u.id}
                   className="border border-neutral-200 rounded-lg p-4 flex items-center gap-4"
@@ -713,6 +934,9 @@ export default function AdminPage() {
                       >
                         {u.status}
                       </Badge>
+                      {u.newsletterSubscribed ? (
+                        <Badge variant="outline">Subscribed</Badge>
+                      ) : null}
                     </div>
                     <p className="text-xs text-neutral-400 mt-0.5">
                       {u.email} · Joined {formatDate(u.createdAt)}
@@ -721,33 +945,12 @@ export default function AdminPage() {
                   <div className="flex items-center gap-2">
                     {u.id !== user.id && (
                       <>
-                        {u.status === "active" ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleUserStatus(u.id, "blocked")}
-                          >
-                            <Ban size={14} className="mr-1 text-orange-500" />{" "}
-                            Block
-                          </Button>
-                        ) : u.status === "blocked" ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleUserStatus(u.id, "active")}
-                          >
-                            <UserCheck
-                              size={14}
-                              className="mr-1 text-green-500"
-                            />{" "}
-                            Unblock
-                          </Button>
-                        ) : null}
                         {u.status !== "banned" ? (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleUserStatus(u.id, "banned")}
+                            loading={isBusy}
                           >
                             <Ban size={14} className="mr-1 text-red-500" /> Ban
                           </Button>
@@ -756,6 +959,7 @@ export default function AdminPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleUserStatus(u.id, "active")}
+                            loading={isBusy}
                           >
                             <UserCheck
                               size={14}
@@ -768,6 +972,8 @@ export default function AdminPage() {
                     )}
                   </div>
                 </div>
+                  );
+                })()
               ))}
             </div>
           )}
@@ -793,6 +999,11 @@ export default function AdminPage() {
             </div>
           ) : (
             reported.map((c) => (
+              (() => {
+                const rowBusy = Boolean(actionLoading[`campaign-${c.id}`]);
+                const dismissBusy = Boolean(actionLoading[`report-${c.id}`]);
+                const busy = rowBusy || dismissBusy;
+                return (
               <div
                 key={c.id}
                 className="border border-neutral-200 rounded-lg p-4"
@@ -822,6 +1033,8 @@ export default function AdminPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleDismissReport(c.id)}
+                      loading={dismissBusy}
+                      disabled={busy}
                     >
                       Dismiss
                     </Button>
@@ -830,6 +1043,8 @@ export default function AdminPage() {
                         size="sm"
                         variant="outline"
                         onClick={() => handleFreeze(c.id)}
+                        loading={rowBusy}
+                        disabled={busy}
                       >
                         <Snowflake size={13} className="mr-1" /> Freeze
                       </Button>
@@ -838,6 +1053,8 @@ export default function AdminPage() {
                         size="sm"
                         variant="outline"
                         onClick={() => handleUnfreeze(c.id)}
+                        loading={rowBusy}
+                        disabled={busy}
                       >
                         <Play size={13} className="mr-1" /> Unfreeze
                       </Button>
@@ -845,6 +1062,8 @@ export default function AdminPage() {
                   </div>
                 </div>
               </div>
+                );
+              })()
             ))
           )}
           {renderPagination(

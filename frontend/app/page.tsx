@@ -5,8 +5,7 @@ import CampaignCard from "@/components/campaign/CampaignCard";
 import { Button } from "@/components/ui/button";
 import { Campaign } from "@/types";
 import { formatCurrency, getProgressPercentage, resolveImageUrl } from "@/lib/utils";
-import HomeCta from "@/components/home/HomeCta";
-import StatCounter from "@/components/home/StatCounter";
+import NewsletterCta from "@/components/home/NewsletterCta";
 
 async function getFeaturedCampaigns(): Promise<Campaign[]> {
   try {
@@ -208,9 +207,8 @@ export default async function HomePage() {
           <div className="relative z-10">
             <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-8 tracking-tighter">Ready to change the world?</h2>
             <p className="text-(--surface-container-high) max-w-xl mx-auto mb-12 text-lg">Join 10,000+ philanthropists receiving weekly stories of impact and early access to breakthrough campaigns.</p>
-            <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-              <input className="w-full md:w-96 px-6 py-4 rounded-xl border-none focus:ring-2 focus:ring-(--primary-fixed) bg-(--surface-container-lowest) text-var(--on-surface)" placeholder="Enter your email" type="email"/>
-              <button className="w-full md:w-auto bg-(--primary) text-(--on-primary-fixed) px-10 py-4 rounded-xl font-bold hover:bg-(--primary-hover) transition-all cursor-pointer">Subscribe Now</button>
+            <div className="flex justify-center items-center">
+              <NewsletterCta />
             </div>
           </div>
         </div>

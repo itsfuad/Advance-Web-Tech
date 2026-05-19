@@ -32,6 +32,22 @@ export class AuthService {
     private emailService: EmailService,
   ) {}
 
+  private serializeUser(user: User) {
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      profileImage: user.profileImage,
+      role: user.role,
+      status: user.status,
+      newsletterSubscribed: user.newsletterSubscribed,
+      emailVerified: user.emailVerified,
+      emailVerifiedAt: user.emailVerifiedAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
   async register(dto: RegisterDto) {
     const existing = await this.userRepository.findOne({
       where: { email: dto.email },
@@ -84,12 +100,10 @@ export class AuthService {
     }
 
     if (user.status === UserStatus.BANNED) {
-      throw new UnauthorizedException('Your account has been banned. Contact support');
+      throw new UnauthorizedException(
+        'Your account has been banned. Contact support',
+      );
     }
-    if (user.status === UserStatus.BLOCKED) {
-      throw new UnauthorizedException('Your account is blocked. Contact support');
-    }
-
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
@@ -186,12 +200,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const { ...profile } = user;
-    return {
-      ...profile,
-      emailVerified: user.emailVerified,
-      emailVerifiedAt: user.emailVerifiedAt,
-    };
+    return this.serializeUser(user);
   }
 
   async verifyEmail(dto: VerifyEmailDto) {
@@ -216,10 +225,9 @@ export class AuthService {
     user.otpExpiry = null;
     await this.userRepository.save(user);
 
-    const { ...profile } = user;
     return {
       message: 'Email verified successfully',
-      user: profile,
+      user: this.serializeUser(user),
     };
   }
 
@@ -255,14 +263,9 @@ export class AuthService {
 
   private generateToken(user: User) {
     const payload = { sub: user.id, email: user.email, role: user.role };
-    const { ...userInfo } = user;
     return {
       access_token: this.jwtService.sign(payload),
-      user: {
-        ...userInfo,
-        emailVerified: user.emailVerified,
-        emailVerifiedAt: user.emailVerifiedAt,
-      },
+      user: this.serializeUser(user),
     };
   }
 }

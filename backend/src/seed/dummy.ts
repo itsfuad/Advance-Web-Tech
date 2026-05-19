@@ -4,6 +4,9 @@ import * as bcrypt from 'bcrypt';
 import { User } from '../users/user.entity';
 import { Campaign, CampaignStatus } from '../campaigns/campaign.entity';
 import { Donation, DonationStatus } from '../donations/donation.entity';
+import { config } from 'dotenv';
+
+config();
 
 const AVATARS = [
   'https://i.pravatar.cc/300?img=12',
@@ -32,7 +35,7 @@ type DummyUserSeed = {
   name: string;
   password: string;
   role: 'admin' | 'user';
-  status: 'active' | 'blocked' | 'banned';
+  status: 'active' | 'banned';
   emailVerified: boolean;
   verifiedMinutesAgo: number;
   profileImage: string;
@@ -340,10 +343,14 @@ export async function seedDatabase(
 
 async function main() {
   const dataSource = new DataSource({
-    type: 'better-sqlite3',
-    database: process.env.DATABASE_PATH || 'fundrise.db',
+    type: 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
+    username: process.env.DB_USERNAME || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
+    database: process.env.DB_DATABASE || 'fundrise',
     entities: [User, Campaign, Donation],
-    synchronize: false,
+    synchronize: true,
   });
 
   await dataSource.initialize();
