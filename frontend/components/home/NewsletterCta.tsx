@@ -18,10 +18,15 @@ export default function NewsletterCta({ className }: NewsletterCtaProps) {
   const [message, setMessage] = useState("");
 
   const isSubscribed = Boolean(user?.newsletterSubscribed);
+  const isAdmin = user?.role === "admin";
 
   const onClick = async () => {
     if (!user) {
       router.push("/login?next=/newsletter");
+      return;
+    }
+    if (isAdmin) {
+      setMessage("Admin accounts cannot subscribe to the newsletter.");
       return;
     }
 
@@ -50,6 +55,7 @@ export default function NewsletterCta({ className }: NewsletterCtaProps) {
         className="w-full md:w-auto bg-(--primary) text-(--on-primary-fixed) px-10 py-4 rounded-xl font-bold hover:bg-(--primary-hover) transition-all cursor-pointer"
         onClick={onClick}
         loading={loading}
+        disabled={isAdmin}
       >
         {isSubscribed ? "Unsubscribe" : "Subscribe"}
       </Button>

@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get('JWT_SECRET', 'fundrise_secret_key_2024'),
+      secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
     });
   }
 

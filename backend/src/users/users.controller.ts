@@ -26,6 +26,7 @@ import {
   ChangePasswordDto,
   UpdateUserStatusDto,
   PublishNewsletterDto,
+  UserListQueryDto,
 } from './user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -43,20 +44,17 @@ export class UsersController {
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
-    @Query('search') search?: string,
-    @Query('status') status?: string,
-    @Query('subscription') subscription?: string,
-    @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: 'ASC' | 'DESC',
+    @Query(new ValidationPipe({ transform: true, whitelist: true }))
+    query?: UserListQueryDto,
   ) {
     return this.usersService.findAll(
       page,
       limit,
-      search,
-      status,
-      subscription,
-      sortBy,
-      sortOrder,
+      query?.search,
+      query?.status,
+      query?.subscription,
+      query?.sortBy,
+      query?.sortOrder,
     );
   }
 

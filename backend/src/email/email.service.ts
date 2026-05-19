@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { sanitizePlainText } from '../common/sanitize.util';
 
 @Injectable()
 export class EmailService {
@@ -30,6 +31,7 @@ export class EmailService {
     expiresInMinutes: number,
   ): Promise<void> {
     const fromEmail = this.configService.get('SMTP_FROM');
+    const safeName = sanitizePlainText(name);
     const mailOptions = {
       from: `"FundRise" <${fromEmail}>`,
       to,
@@ -41,7 +43,7 @@ export class EmailService {
           </div>
           <div style="padding: 32px;">
             <h2 style="color: #000; margin-top: 0;">Password Reset Request</h2>
-            <p style="color: #333;">Hi ${name},</p>
+            <p style="color: #333;">Hi ${safeName},</p>
             <p style="color: #333;">You requested a password reset. Use the OTP below to reset your password. This code expires in <strong>${expiresInMinutes} minutes</strong>.</p>
             <div style="background: #f5f5f5; border: 2px dashed #000; border-radius: 8px; padding: 24px; text-align: center; margin: 24px 0;">
               <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #000;">${otp}</span>
@@ -64,6 +66,7 @@ export class EmailService {
 
   async sendWelcomeEmail(to: string, name: string): Promise<void> {
     const fromEmail = this.configService.get('SMTP_FROM');
+    const safeName = sanitizePlainText(name);
     const mailOptions = {
       from: `"FundRise" <${fromEmail}>`,
       to,
@@ -74,7 +77,7 @@ export class EmailService {
             <h1 style="color: #fff; margin: 0; font-size: 24px; letter-spacing: 2px;">FUNDRISE</h1>
           </div>
           <div style="padding: 32px;">
-            <h2 style="color: #000; margin-top: 0;">Welcome to FundRise, ${name}!</h2>
+            <h2 style="color: #000; margin-top: 0;">Welcome to FundRise, ${safeName}!</h2>
             <p style="color: #333; line-height: 1.6;">Your account has been created successfully. Start exploring campaigns, creating your own, and making a difference today.</p>
             <div style="margin: 32px 0;">
               <a href="#" style="display: inline-block; background: #000; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 6px;">Get Started</a>
@@ -101,6 +104,7 @@ export class EmailService {
     link: string,
   ): Promise<void> {
     const fromEmail = this.configService.get('SMTP_FROM');
+    const safeName = sanitizePlainText(name);
     const mailOptions = {
       from: `"FundRise" <${fromEmail}>`,
       to,
@@ -111,7 +115,7 @@ export class EmailService {
             <h1 style="color: #fff; margin: 0; font-size: 24px; letter-spacing: 2px;">FUNDRISE</h1>
           </div>
           <div style="padding: 32px;">
-            <h2 style="color: #000; margin-top: 0;">Verify your email, ${name}</h2>
+            <h2 style="color: #000; margin-top: 0;">Verify your email, ${safeName}</h2>
             <p style="color: #333; line-height: 1.6;">Please verify your email address to unlock campaign creation and donations.</p>
             <p style="color: #333; line-height: 1.6;">If you do not verify within 10 minutes, your account will be deleted from our system.</p>
             <div style="margin: 32px 0;">
@@ -145,6 +149,9 @@ export class EmailService {
       active: 'Your FundRise account has been reactivated',
     };
     const subject = subjectMap[currentStatus] ?? 'Account status updated';
+    const safeName = sanitizePlainText(name);
+    const safePreviousStatus = sanitizePlainText(previousStatus);
+    const safeCurrentStatus = sanitizePlainText(currentStatus);
     const mailOptions = {
       from: `"FundRise" <${fromEmail}>`,
       to,
@@ -156,10 +163,10 @@ export class EmailService {
           </div>
           <div style="padding: 32px;">
             <h2 style="color: #000; margin-top: 0;">Account status update</h2>
-            <p style="color: #333;">Hi ${name},</p>
+            <p style="color: #333;">Hi ${safeName},</p>
             <p style="color: #333; line-height: 1.6;">
-              Your account status has changed from <strong>${previousStatus}</strong> to
-              <strong>${currentStatus}</strong> by an administrator.
+              Your account status has changed from <strong>${safePreviousStatus}</strong> to
+              <strong>${safeCurrentStatus}</strong> by an administrator.
             </p>
             <p style="color: #666; font-size: 14px;">If you believe this is a mistake, please contact support.</p>
           </div>
@@ -190,6 +197,9 @@ export class EmailService {
       status === 'frozen'
         ? 'Your FundRise campaign has been frozen'
         : 'Your FundRise campaign is active again';
+    const safeName = sanitizePlainText(name);
+    const safeCampaignTitle = sanitizePlainText(campaignTitle);
+    const safeStatus = sanitizePlainText(status);
     const mailOptions = {
       from: `"FundRise" <${fromEmail}>`,
       to,
@@ -201,10 +211,10 @@ export class EmailService {
           </div>
           <div style="padding: 32px;">
             <h2 style="color: #000; margin-top: 0;">Campaign status update</h2>
-            <p style="color: #333;">Hi ${name},</p>
+            <p style="color: #333;">Hi ${safeName},</p>
             <p style="color: #333; line-height: 1.6;">
-              Your campaign <strong>${campaignTitle}</strong> is now marked as
-              <strong>${status}</strong> by an administrator.
+              Your campaign <strong>${safeCampaignTitle}</strong> is now marked as
+              <strong>${safeStatus}</strong> by an administrator.
             </p>
             <p style="color: #666; font-size: 14px;">If you believe this is a mistake, please contact support.</p>
           </div>
@@ -234,17 +244,19 @@ export class EmailService {
     const frontendUrl =
       this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
     const unsubscribeUrl = `${frontendUrl}/newsletter?token=${unsubscribeToken}`;
+    const safeSubject = sanitizePlainText(subject);
+    const safeMessage = sanitizePlainText(message).replace(/\n/g, '<br/>');
     const mailOptions = {
       from: `"FundRise" <${fromEmail}>`,
       to: recipient,
-      subject,
+      subject: safeSubject,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; background: #ffffff; border: 1px solid #ececec; border-radius: 8px; overflow: hidden;">
           <div style="background: #000; color: #fff; padding: 20px;">
             <h2 style="margin: 0; font-size: 20px;">FundRise Newsletter</h2>
           </div>
           <div style="padding: 20px; color: #222; line-height: 1.6;">
-            ${message.replace(/\n/g, '<br/>')}
+            ${safeMessage}
             <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;" />
             <p style="font-size: 13px; color: #666;">
               Manage subscription:

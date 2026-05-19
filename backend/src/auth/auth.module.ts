@@ -17,8 +17,12 @@ import { ExpiredAccountCleanupService } from './expired-account-cleanup.service'
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get('JWT_SECRET', 'fundrise_secret_key_2024'),
-        signOptions: { expiresIn: config.get('JWT_EXPIRES_IN', '7d') },
+        secret: config.getOrThrow<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: config.get<string>('JWT_EXPIRES_IN', '7d') as
+            | number
+            | `${number}${'ms' | 's' | 'm' | 'h' | 'd' | 'w' | 'y'}`,
+        },
       }),
     }),
     EmailModule,

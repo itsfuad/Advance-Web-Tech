@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { User, UserStatus } from './user.entity';
+import { User, UserRole, UserStatus } from './user.entity';
 import {
   UpdateProfileDto,
   ChangePasswordDto,
@@ -187,6 +187,11 @@ export class UsersService {
   async subscribeToNewsletter(userId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
+    if (user.role === UserRole.ADMIN) {
+      throw new ForbiddenException(
+        'Admins cannot subscribe to the newsletter',
+      );
+    }
     if (user.newsletterSubscribed) {
       return { subscribed: true, message: 'Already subscribed to newsletter' };
     }
@@ -199,6 +204,11 @@ export class UsersService {
   async unsubscribeFromNewsletter(userId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
+    if (user.role === UserRole.ADMIN) {
+      throw new ForbiddenException(
+        'Admins cannot subscribe to the newsletter',
+      );
+    }
     if (!user.newsletterSubscribed) {
       return { subscribed: false, message: 'Already unsubscribed' };
     }

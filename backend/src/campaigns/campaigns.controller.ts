@@ -25,6 +25,7 @@ import {
   CreateCampaignDto,
   UpdateCampaignDto,
   ReportCampaignDto,
+  AdminCampaignQueryDto,
 } from './campaign.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -70,20 +71,17 @@ export class CampaignsController {
   findAllAdmin(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
-    @Query('search') search?: string,
-    @Query('status') status?: string,
-    @Query('reported') reported?: string,
-    @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: 'ASC' | 'DESC',
+    @Query(new ValidationPipe({ transform: true, whitelist: true }))
+    query?: AdminCampaignQueryDto,
   ) {
     return this.campaignsService.findAllAdmin(
       page,
       limit,
-      search,
-      status,
-      reported,
-      sortBy,
-      sortOrder,
+      query?.search,
+      query?.status,
+      query?.reported,
+      query?.sortBy,
+      query?.sortOrder,
     );
   }
 

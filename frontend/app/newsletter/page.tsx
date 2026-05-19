@@ -5,8 +5,10 @@ import { useSearchParams } from "next/navigation";
 import NewsletterCta from "@/components/home/NewsletterCta";
 import api from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 function NewsletterContent() {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState("");
@@ -46,7 +48,13 @@ function NewsletterContent() {
           Manage your FundRise newsletter subscription.
         </p>
       )}
-      <NewsletterCta />
+      {user?.role === "admin" ? (
+        <div className="rounded-md border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-600">
+          Admin accounts cannot subscribe to the newsletter.
+        </div>
+      ) : (
+        <NewsletterCta />
+      )}
     </div>
   );
 }

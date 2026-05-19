@@ -65,6 +65,8 @@ export class DonationsService {
     transactionId?: string;
     error?: string;
   }> {
+    this.validateCardPaymentFields(dto);
+
     // Simulate processing delay
     await new Promise((resolve) => setTimeout(resolve, 800));
 
@@ -83,6 +85,26 @@ export class DonationsService {
       success: true,
       transactionId: `TXN-${uuidv4().split('-')[0].toUpperCase()}-${Date.now()}`,
     };
+  }
+
+  private validateCardPaymentFields(dto: CreateDonationDto) {
+    if (!dto.cardNumber || !dto.expiryDate || !dto.cvv) {
+      throw new BadRequestException('Card details are required');
+    }
+
+    const [monthRaw, yearRaw] = dto.expiryDate.split('/');
+    const month = Number(monthRaw);
+    const year = Number(`20${yearRaw}`);
+    if (!month || !year || month < 1 || month > 12) {
+      throw new BadRequestException('Invalid card expiry date');
+    }
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+      throw new BadRequestException('Card has expired');
+    }
   }
 
   async findByCampaign(campaignId: string, page = 1, limit = 20) {

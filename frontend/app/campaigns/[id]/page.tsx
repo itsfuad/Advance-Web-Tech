@@ -112,16 +112,30 @@ export default function CampaignDetailPage() {
       return;
     }
 
+    const cardDigits = donationForm.cardNumber.replace(/\D/g, "");
+    const expiry = donationForm.expiryDate.trim();
+    const cvv = donationForm.cvv.trim();
+    const holder = (donationForm.cardHolder || user.name || "").trim();
+    if (
+      cardStatus !== "valid" ||
+      !validateExpiry(expiry) ||
+      !validateCvv(cvv, cardBrand) ||
+      !holder
+    ) {
+      setDonateError("Please enter valid card details.");
+      return;
+    }
+
     setDonating(true);
     setDonateError("");
     try {
       await api.post(`/donations/campaign/${id}`, {
         amount: parseFloat(donationForm.amount),
         message: donationForm.message,
-        cardNumber: donationForm.cardNumber,
-        cardHolder: donationForm.cardHolder || user.name,
-        expiryDate: donationForm.expiryDate,
-        cvv: donationForm.cvv,
+        cardNumber: cardDigits,
+        cardHolder: holder,
+        expiryDate: expiry,
+        cvv,
       });
       setDonateSuccess(true);
       // Refresh campaign
@@ -265,6 +279,22 @@ export default function CampaignDetailPage() {
       return luhnCheck(digits) ? "valid" : "invalid";
     }
     return "valid";
+  };
+
+  const validateExpiry = (expiry: string) => {
+    const m = expiry.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+    if (!m) return false;
+    const month = Number(m[1]);
+    const year = Number(`20${m[2]}`);
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    return year > currentYear || (year === currentYear && month >= currentMonth);
+  };
+
+  const validateCvv = (cvv: string, brand: CARD_BRAND) => {
+    if (!/^\d{3,4}$/.test(cvv)) return false;
+    return brand === "amex" ? cvv.length === 4 : cvv.length === 3;
   };
 
   useEffect(() => {
@@ -730,7 +760,11 @@ export default function CampaignDetailPage() {
                   disabled={
                     previewLoading ||
                     !donationForm.amount ||
-                    parseFloat(donationForm.amount) <= 0
+                    parseFloat(donationForm.amount) <= 0 ||
+                    cardStatus !== "valid" ||
+                    !validateExpiry(donationForm.expiryDate.trim()) ||
+                    !validateCvv(donationForm.cvv.trim(), cardBrand) ||
+                    !(donationForm.cardHolder || user?.name || "").trim()
                   }
                 >
                   {previewLoading
