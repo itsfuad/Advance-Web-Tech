@@ -1,0 +1,26 @@
+@baseUrl = http://localhost:4000/api
+@adminToken = REPLACE_WITH_ADMIN_JWT
+@contentType = application/json
+
+### List users (search/filter/sort)
+GET {{baseUrl}}/users?page=1&limit=10&search=&status=active&subscription=subscribed&sortBy=createdAt&sortOrder=DESC
+Authorization: Bearer {{adminToken}}
+
+### Update user status (ban/unban)
+PATCH {{baseUrl}}/users/REPLACE_USER_ID/status
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": "banned"
+}
+
+### Publish newsletter
+POST {{baseUrl}}/users/newsletter/publish
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+  "subject": "Platform Update",
+  "message": "Hello subscribers,\nWe have shipped new features."
+}

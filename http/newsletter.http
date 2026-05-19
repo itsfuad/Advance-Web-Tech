@@ -1,0 +1,13 @@
+@baseUrl = http://localhost:4000/api
+@userToken = REPLACE_WITH_USER_JWT
+
+### Subscribe to newsletter (authenticated)
+POST {{baseUrl}}/users/newsletter/subscribe
+Authorization: Bearer {{userToken}}
+
+### Unsubscribe from newsletter (authenticated)
+POST {{baseUrl}}/users/newsletter/unsubscribe
+Authorization: Bearer {{userToken}}
+
+### Unsubscribe from newsletter (public token link)
+GET {{baseUrl}}/users/newsletter/unsubscribe?token=REPLACE_UNSUBSCRIBE_TOKEN

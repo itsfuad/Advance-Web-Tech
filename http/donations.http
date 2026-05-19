@@ -1,0 +1,21 @@
+@baseUrl = http://localhost:4000/api
+@userToken = REPLACE_WITH_USER_JWT
+@contentType = application/json
+
+### Donate to a campaign
+POST {{baseUrl}}/donations/campaign/REPLACE_CAMPAIGN_ID
+Authorization: Bearer {{userToken}}
+Content-Type: {{contentType}}
+
+{
+  "amount": 25,
+  "message": "Great initiative!",
+  "cardNumber": "4242424242424242",
+  "cardHolder": "Test User",
+  "expiryDate": "12/30",
+  "cvv": "123"
+}
+
+### My donations
+GET {{baseUrl}}/donations/my?page=1&limit=10
+Authorization: Bearer {{userToken}}

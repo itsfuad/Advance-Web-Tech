@@ -1,0 +1,28 @@
+@baseUrl = http://localhost:4000/api
+@adminToken = REPLACE_WITH_ADMIN_JWT
+@userToken = REPLACE_WITH_USER_JWT
+@contentType = application/json
+
+### Public list campaigns
+GET {{baseUrl}}/campaigns?page=1&limit=12&sort=top
+
+### Admin list campaigns (search/filter/sort)
+GET {{baseUrl}}/campaigns/admin/all?page=1&limit=10&search=&status=active&reported=false&sortBy=createdAt&sortOrder=DESC
+Authorization: Bearer {{adminToken}}
+
+### Admin freeze campaign
+PATCH {{baseUrl}}/campaigns/REPLACE_CAMPAIGN_ID/freeze
+Authorization: Bearer {{adminToken}}
+
+### Admin unfreeze campaign
+PATCH {{baseUrl}}/campaigns/REPLACE_CAMPAIGN_ID/unfreeze
+Authorization: Bearer {{adminToken}}
+
+### User report campaign
+POST {{baseUrl}}/campaigns/REPLACE_CAMPAIGN_ID/report
+Authorization: Bearer {{userToken}}
+Content-Type: {{contentType}}
+
+{
+  "reason": "Suspicious campaign details."
+}
