@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { User } from "@/types";
+import api from "@/lib/api";
 
 interface AuthContextType {
   user: User | null;
@@ -25,6 +26,21 @@ const AuthContext = createContext<AuthContextType>({
 
 const AUTH_PAGES = ["/login", "/register"];
 const PROTECTED_PAGES = ["/dashboard", "/campaigns/new", "/admin"];
+
+const sameUser = (a: User | null, b: User | null) => {
+  if (!a || !b) return a === b;
+  return (
+    a.id === b.id &&
+    a.email === b.email &&
+    a.name === b.name &&
+    a.role === b.role &&
+    a.status === b.status &&
+    a.newsletterSubscribed === b.newsletterSubscribed &&
+    a.emailVerified === b.emailVerified &&
+    a.emailVerifiedAt === b.emailVerifiedAt &&
+    a.profileImage === b.profileImage
+  );
+};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -65,10 +81,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
+    if (user?.status === "banned") {
+      logout();
+      return;
+    }
+
     if (user && isAuthPage) {
       router.replace(user.role === "admin" ? "/admin" : "/dashboard");
     }
   }, [isLoading, pathname, router, user]);
+
+  useEffect(() => {
+    if (isLoading || !user || !token) return;
+
+    let active = true;
+
+    const syncSession = async () => {
+      try {
+        const res = await api.get("/users/me");
+        const freshUser = res.data as User;
+        if (!active) return;
+        if (freshUser.status === "banned") {
+          logout();
+          return;
+        }
+        const merged = { ...user, ...freshUser };
+        if (!sameUser(user, merged)) {
+          updateUser(merged);
+        }
+      } catch {
+        // 401 is handled by interceptor
+      }
+    };
+
+    void syncSession();
+    const interval = window.setInterval(syncSession, 30000);
+
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [isLoading, token]);
 
   const login = (newToken: string, newUser: User) => {
     localStorage.setItem("token", newToken);

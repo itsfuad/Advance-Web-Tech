@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, IsNull, Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 
 const EMAIL_VERIFICATION_WINDOW_MS = 10 * 60 * 1000;
