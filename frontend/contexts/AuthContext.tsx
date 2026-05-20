@@ -121,7 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       active = false;
       window.clearInterval(interval);
     };
-  }, [isLoading, token]);
+  }, [isLoading, token, pathname]);
 
   const login = (newToken: string, newUser: User) => {
     localStorage.setItem("token", newToken);

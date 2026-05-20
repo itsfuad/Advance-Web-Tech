@@ -15,6 +15,11 @@ export enum DonationStatus {
   FAILED = 'failed',
 }
 
+export enum PaymentMethod {
+  CARD = 'card',
+  PAYPAL = 'paypal',
+}
+
 @Entity('donations')
 export class Donation {
   @PrimaryGeneratedColumn('uuid')
@@ -31,6 +36,9 @@ export class Donation {
 
   @Column({ nullable: true, type: 'text' })
   message: string;
+
+  @Column({ type: 'text', default: PaymentMethod.CARD })
+  paymentMethod: PaymentMethod;
 
   @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'donorId' })

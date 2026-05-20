@@ -55,3 +55,35 @@ export class CreateDonationDto {
   @Transform(({ value }: { value: string | undefined }) => value?.trim())
   cvv?: string;
 }
+
+export class CreatePaypalOrderDto {
+  @Transform(({ value }: { value: unknown }) => Number(value))
+  @IsNumber()
+  @Min(1)
+  @Max(1000000)
+  amount: number;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(500)
+  @Transform(({ value }: { value: string | undefined }) =>
+    value ? sanitizePlainText(value) : value,
+  )
+  message?: string;
+}
+
+export class CapturePaypalOrderDto {
+  @IsString()
+  @Matches(/^[A-Z0-9]+$/)
+  @MaxLength(32)
+  @Transform(({ value }: { value: string }) => value.trim())
+  orderId: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(500)
+  @Transform(({ value }: { value: string | undefined }) =>
+    value ? sanitizePlainText(value) : value,
+  )
+  message?: string;
+}

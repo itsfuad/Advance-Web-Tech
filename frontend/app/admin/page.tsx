@@ -464,7 +464,16 @@ export default function AdminPage() {
                       className="flex justify-between items-center py-2 border-b border-neutral-100"
                     >
                       <div>
-                        <p className="text-sm">{d.donor?.name}</p>
+                        {d.donorId ? (
+                          <Link
+                            href={`/profile/${d.donorId}`}
+                            className="text-sm hover:underline"
+                          >
+                            {d.donor?.name || "Unknown donor"}
+                          </Link>
+                        ) : (
+                          <p className="text-sm">{d.donor?.name || "Unknown donor"}</p>
+                        )}
                         <p className="text-xs text-neutral-400">
                           {formatDate(d.createdAt)}
                         </p>

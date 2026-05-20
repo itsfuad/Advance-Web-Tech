@@ -41,6 +41,7 @@ export interface Donation {
   id: string;
   amount: number;
   status: "pending" | "completed" | "failed";
+  paymentMethod?: "card" | "paypal";
   transactionId?: string;
   message?: string;
   donorId: string;

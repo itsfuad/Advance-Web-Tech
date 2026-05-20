@@ -19,3 +19,38 @@ Content-Type: {{contentType}}
 ### My donations
 GET {{baseUrl}}/donations/my?page=1&limit=10
 Authorization: Bearer {{userToken}}
+
+### Create PayPal order
+POST {{baseUrl}}/donations/campaign/REPLACE_CAMPAIGN_ID/paypal/create-order
+Authorization: Bearer {{userToken}}
+Content-Type: {{contentType}}
+
+{
+  "amount": 25,
+  "message": "Donated via PayPal"
+}
+
+### Capture PayPal order (after PayPal redirect token)
+POST {{baseUrl}}/donations/campaign/REPLACE_CAMPAIGN_ID/paypal/capture
+Authorization: Bearer {{userToken}}
+Content-Type: {{contentType}}
+
+{
+  "orderId": "REPLACE_PAYPAL_ORDER_ID",
+  "message": "Donated via PayPal"
+}
+
+### PayPal webhook (signature headers required in real request)
+POST {{baseUrl}}/donations/paypal/webhook
+Content-Type: application/json
+paypal-transmission-id: REPLACE
+paypal-transmission-time: REPLACE
+paypal-transmission-sig: REPLACE
+paypal-auth-algo: SHA256withRSA
+paypal-cert-url: REPLACE
+
+{
+  "id": "WH-TEST",
+  "event_type": "PAYMENT.CAPTURE.COMPLETED",
+  "resource": {}
+}

@@ -53,6 +53,12 @@ export default function CampaignDetailPage() {
   const [donateSuccess, setDonateSuccess] = useState(false);
   const [donateError, setDonateError] = useState("");
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [paypalLoading, setPaypalLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal">("card");
+  const [paypalNotice, setPaypalNotice] = useState<{
+    type: "success" | "info" | "error";
+    text: string;
+  } | null>(null);
   const [donationForm, setDonationForm] = useState({
     amount: "",
     message: "",
@@ -99,6 +105,59 @@ export default function CampaignDetailPage() {
     };
     fetchData();
   }, [id, router]);
+
+  useEffect(() => {
+    if (!user || !id) return;
+    const params = new URLSearchParams(window.location.search);
+    const paypalStatus = params.get("paypal");
+    const paypalToken = params.get("token");
+    if (paypalStatus === "cancel") {
+      setPaypalNotice({
+        type: "info",
+        text: "PayPal payment was cancelled.",
+      });
+      const cleanUrl = `${window.location.origin}/campaigns/${id}`;
+      window.history.replaceState({}, "", cleanUrl);
+      return;
+    }
+    if (paypalStatus !== "success" || !paypalToken) return;
+
+    const pendingMessage = localStorage.getItem(`pp_msg_${id}`) || "";
+    setDonating(true);
+    setDonateError("");
+    setDonateSuccess(false);
+
+    (async () => {
+      try {
+        await api.post(`/donations/campaign/${id}/paypal/capture`, {
+          orderId: paypalToken,
+          message: pendingMessage,
+        });
+        localStorage.removeItem(`pp_msg_${id}`);
+        setPaypalNotice({
+          type: "success",
+          text: "Thank you! Your PayPal donation was successful.",
+        });
+        setDonateSuccess(true);
+        const [campaignRes, donationsRes] = await Promise.all([
+          api.get(`/campaigns/${id}`),
+          api.get(`/donations/campaign/${id}`),
+        ]);
+        setCampaign(campaignRes.data);
+        setDonations(donationsRes.data.data);
+      } catch (err: unknown) {
+        setDonateError(getApiErrorMessage(err, "PayPal capture failed"));
+        setPaypalNotice({
+          type: "error",
+          text: getApiErrorMessage(err, "PayPal payment failed."),
+        });
+      } finally {
+        setDonating(false);
+        const cleanUrl = `${window.location.origin}/campaigns/${id}`;
+        window.history.replaceState({}, "", cleanUrl);
+      }
+    })();
+  }, [id, user]);
 
   const handleDonate = async () => {
     if (!user) {
@@ -151,6 +210,39 @@ export default function CampaignDetailPage() {
     }
   };
 
+  const handlePaypalDonate = async () => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    if (!emailVerified) {
+      setDonateError("Please verify your email before donating.");
+      router.push(`/profile/${user?.id ?? ""}`);
+      return;
+    }
+    if (!donationForm.amount || parseFloat(donationForm.amount) <= 0) {
+      setDonateError("Please enter a valid donation amount.");
+      return;
+    }
+
+    setPaypalLoading(true);
+    setDonateError("");
+    try {
+      localStorage.setItem(`pp_msg_${id}`, donationForm.message || "");
+      const res = await api.post(`/donations/campaign/${id}/paypal/create-order`, {
+        amount: parseFloat(donationForm.amount),
+        message: donationForm.message,
+      });
+      if (!res.data?.approveUrl) {
+        throw new Error("PayPal approval URL not received");
+      }
+      window.location.href = res.data.approveUrl;
+    } catch (err: unknown) {
+      setDonateError(getApiErrorMessage(err, "Failed to start PayPal checkout"));
+      setPaypalLoading(false);
+    }
+  };
+
   const getCardMeta = (digits: string) => {
     const brand = detectCardBrand(digits) as CARD_BRAND;
     const status = validateCardNumber(digits, brand) as CARD_STATUS;
@@ -194,9 +286,12 @@ export default function CampaignDetailPage() {
   };
 
   useEffect(() => {
-    if (!showDonateModal) {
-      resetDonationForm();
+    if (showDonateModal) {
+      setDonateSuccess(false);
+      setDonateError("");
+      return;
     }
+    resetDonationForm();
   }, [showDonateModal]);
 
   const handleReport = async () => {
@@ -384,6 +479,19 @@ export default function CampaignDetailPage() {
                   campaign.creator?.name || "Unknown"
                 )}
               </p>
+              {paypalNotice ? (
+                <div
+                  className={`mt-3 rounded-md border px-3 py-2 text-sm ${
+                    paypalNotice.type === "success"
+                      ? "border-green-200 bg-green-50 text-green-700"
+                      : paypalNotice.type === "error"
+                        ? "border-red-200 bg-red-50 text-red-700"
+                        : "border-blue-200 bg-blue-50 text-blue-700"
+                  }`}
+                >
+                  {paypalNotice.text}
+                </div>
+              ) : null}
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {campaign.status === "frozen" && (
@@ -441,9 +549,18 @@ export default function CampaignDetailPage() {
                     className="flex items-center justify-between py-3 border-b border-neutral-100"
                   >
                     <div>
-                      <p className="font-medium text-sm">
-                        {donation.donor?.name}
-                      </p>
+                      {donation.donorId ? (
+                        <Link
+                          href={`/profile/${donation.donorId}`}
+                          className="font-medium text-sm hover:underline"
+                        >
+                          {donation.donor?.name || "Unknown donor"}
+                        </Link>
+                      ) : (
+                        <p className="font-medium text-sm">
+                          {donation.donor?.name || "Unknown donor"}
+                        </p>
+                      )}
                       {donation.message && (
                         <p className="text-xs text-neutral-500 mt-0.5">
                           &ldquo;{donation.message}&rdquo;
@@ -583,6 +700,26 @@ export default function CampaignDetailPage() {
                 />
               </div>
 
+              <div className="space-y-1.5">
+                <Label>Payment Method</Label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("card")}
+                    className={`px-3 py-1.5 text-sm border rounded-md ${paymentMethod === "card" ? "bg-black text-white border-black" : "border-neutral-200 hover:border-black"}`}
+                  >
+                    Card
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("paypal")}
+                    className={`px-3 py-1.5 text-sm border rounded-md ${paymentMethod === "paypal" ? "bg-black text-white border-black" : "border-neutral-200 hover:border-black"}`}
+                  >
+                    PayPal
+                  </button>
+                </div>
+              </div>
+
               <div className="flex gap-2">
                 {[10, 25, 50, 100].map((amt) => (
                   <button
@@ -610,6 +747,7 @@ export default function CampaignDetailPage() {
                 />
               </div>
 
+              {paymentMethod === "card" ? (
               <div className="border-t pt-4">
                 <p className="text-xs text-neutral-500 mb-3 flex items-center gap-1">
                   <CreditCard size={12} /> Mock payment — no real charges
@@ -745,6 +883,13 @@ export default function CampaignDetailPage() {
                   </div>
                 </div>
               </div>
+              ) : (
+                <div className="border-t pt-4">
+                  <p className="text-sm text-neutral-600">
+                    You will be redirected to PayPal to approve this payment.
+                  </p>
+                </div>
+              )}
 
               <DialogFooter>
                 <Button
@@ -755,23 +900,24 @@ export default function CampaignDetailPage() {
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleDonate}
-                  loading={donating}
+                  onClick={paymentMethod === "card" ? handleDonate : handlePaypalDonate}
+                  loading={paymentMethod === "card" ? donating : paypalLoading}
                   disabled={
                     previewLoading ||
                     !donationForm.amount ||
                     parseFloat(donationForm.amount) <= 0 ||
-                    cardStatus !== "valid" ||
-                    !validateExpiry(donationForm.expiryDate.trim()) ||
-                    !validateCvv(donationForm.cvv.trim(), cardBrand) ||
-                    !(donationForm.cardHolder || user?.name || "").trim()
+                    (paymentMethod === "card" &&
+                      (cardStatus !== "valid" ||
+                        !validateExpiry(donationForm.expiryDate.trim()) ||
+                        !validateCvv(donationForm.cvv.trim(), cardBrand) ||
+                        !(donationForm.cardHolder || user?.name || "").trim()))
                   }
                 >
                   {previewLoading
                     ? "Preparing..."
-                    : donating
+                    : (paymentMethod === "card" ? donating : paypalLoading)
                       ? "Processing..."
-                      : `Donate ${
+                      : `${paymentMethod === "card" ? "Donate" : "Continue to PayPal"} ${
                           donationForm.amount
                             ? formatCurrency(parseFloat(donationForm.amount))
                             : ""
