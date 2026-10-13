@@ -2,6 +2,16 @@
 
 A full-stack crowdfunding platform built with **NestJS** (backend) and **NextJS** (frontend).
 
+## Screenshots
+<img width="1920" height="972" alt="Screenshot From 2026-10-13 17-07-33" src="https://github.com/user-attachments/assets/9fefafd5-842d-46db-8c25-719be52ad8e3" />
+<img width="1920" height="972" alt="Screenshot From 2026-10-13 17-07-40" src="https://github.com/user-attachments/assets/026884e5-2a25-4138-a23c-5e09418d6dd5" />
+<img width="1920" height="972" alt="Screenshot From 2026-10-13 17-07-49" src="https://github.com/user-attachments/assets/f55b3e50-128b-40e3-902b-54c09ec32b6d" />
+<img width="1920" height="972" alt="Screenshot From 2026-10-13 17-07-56" src="https://github.com/user-attachments/assets/21d9a887-bf44-42b9-ae38-daf2a610d25b" />
+<img width="1920" height="972" alt="Screenshot From 2026-10-13 17-08-06" src="https://github.com/user-attachments/assets/7c894bad-5264-4d32-9840-7f50958ee926" />
+<img width="1920" height="972" alt="Screenshot From 2026-10-13 17-08-15" src="https://github.com/user-attachments/assets/aed1a78e-b9ee-4f5b-9f62-8ed655c166a1" />
+<img width="1920" height="972" alt="Screenshot From 2026-10-13 17-08-27" src="https://github.com/user-attachments/assets/5d46cb63-c0a4-4937-a230-c2a61780f486" />
+
+
 ## Features
 
 ### User Roles
